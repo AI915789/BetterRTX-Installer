@@ -1,7 +1,8 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
 @theme {
-    --font-mono: var(--font-monocraft), monospace;
-  
+    --font-mono: 'Martian Mono Variable', 'Martian Mono', var(--font-monocraft), monospace;
+    --font-sans: 'Inter Variable', Inter, Helvetica, Arial, system-ui, sans-serif;
     --height-app: calc(100vh - (--spacing(16)));
   
     --width-app: calc(100vw - (--spacing(64)));
@@ -65,4 +66,20 @@
     --color-minecraft-red-950: oklch(25.35% 0.0735 23.99deg);
 
     --color-muted: oklch(60% 0.1719 23.41deg);
+
+    /* App semantic color tokens */
+    --color-app-bg: var(--color-minecraft-slate-900);
+    --color-app-panel: var(--color-minecraft-slate-800);
+    --color-app-elev: var(--color-minecraft-slate-700);
+    --color-app-fg: var(--color-minecraft-slate-50);
+    --color-app-muted: var(--color-minecraft-slate-300);
+    --color-app-border: var(--color-minecraft-slate-700);
+    --color-brand-accent: var(--color-minecraft-blue-500);
+    --color-brand-accent-600: var(--color-minecraft-blue-600);
+    --color-success: var(--color-minecraft-green-500);
+    --color-success-600: var(--color-minecraft-green-600);
+    --color-danger: var(--color-minecraft-red-600);
+    --color-danger-600: var(--color-minecraft-red-600);
+    --color-danger-700: var(--color-minecraft-red-700);
+    --color-danger-800: var(--color-minecraft-red-800);
   }

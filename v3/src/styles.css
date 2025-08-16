@@ -2,42 +2,38 @@
 @import "./theme.css";
 
 /* Custom utilities - must be at top level, not nested in @layer */
-@utility panel { @apply rounded-lg border shadow-sm; background-color: var(--app-panel); border-color: var(--app-border); }
-@utility panel__header { @apply border-b px-4 py-3; border-color: var(--app-border); }
+@utility panel { @apply rounded-lg border shadow-sm bg-app-panel border-app-border; }
+@utility panel__header { @apply border-b px-4 py-3 border-app-border; }
 @utility panel__title { @apply text-base font-semibold; }
 @utility panel__body { @apply p-4; }
 
 @utility button {
   @apply inline-flex items-center justify-center gap-2 rounded-md border-2 px-4 py-2 text-sm font-medium transition-all select-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer;
-  color: var(--app-fg);
-  border-color: var(--app-border);
-  background-color: color-mix(in oklab, var(--app-panel) 96%, transparent);
-  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--app-border) 80%, black 20%);
+  @apply text-app-fg border-app-border bg-app-panel/95;
+  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--color-app-border) 80%, black 20%);
   transform: translateY(0);
   &:hover { 
-    background-color: color-mix(in oklab, var(--app-panel) 88%, transparent);
+    @apply bg-app-panel/90;
     transform: translateY(1px);
-    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--app-border) 80%, black 20%);
+    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--color-app-border) 80%, black 20%);
   }
   &:active {
     transform: translateY(3px);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--app-border) 80%, black 20%);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-app-border) 80%, black 20%);
   }
 }
 
 @utility button--primary {
-  color: white;
-  background-color: var(--brand-accent-600);
-  border-color: var(--brand-accent-500);
-  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--brand-accent-600) 80%, black 20%);
+  @apply text-white bg-brand-accent-600 border-brand-accent;
+  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--color-brand-accent-600) 80%, black 20%);
   &:hover { 
-    background-color: var(--brand-accent-500);
+    @apply bg-brand-accent;
     transform: translateY(1px);
-    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--brand-accent-600) 80%, black 20%);
+    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--color-brand-accent-600) 80%, black 20%);
   }
   &:active {
     transform: translateY(3px);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-accent-600) 80%, black 20%);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-brand-accent-600) 80%, black 20%);
   }
 }
 
@@ -53,22 +49,20 @@
 }
 
 @utility button--danger {
-  color: white;
-  background-color: var(--danger-600);
-  border-color: var(--danger-700);
-  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--danger-700) 80%, black 20%);
+  @apply text-white bg-danger-600 border-danger-700;
+  box-shadow: 0 3px 0 0 color-mix(in oklab, var(--color-danger-700) 80%, black 20%);
   &:hover { 
-    background-color: var(--danger-700);
+    @apply bg-danger-700;
     transform: translateY(1px);
-    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--danger-700) 80%, black 20%);
+    box-shadow: 0 2px 0 0 color-mix(in oklab, var(--color-danger-700) 80%, black 20%);
   }
   &:active {
     transform: translateY(3px);
-    box-shadow: 0 0 0 0 color-mix(in oklab, var(--danger-700) 80%, black 20%);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-danger-700) 80%, black 20%);
   }
 }
 
-@utility badge { @apply inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold; border-color: var(--app-border); }
+@utility badge { @apply inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold border-app-border; }
 
 @utility hover-lift {
   @apply transition-transform;
@@ -84,28 +78,9 @@
   }
 
   body {
-    @apply antialiased;
-    background-color: var(--app-bg, var(--color-minecraft-slate-900));
-    color: var(--app-fg, var(--color-minecraft-slate-50));
-    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    @apply antialiased font-sans bg-app-bg text-app-fg;
   }
 
-  :root {
-    /* App semantic tokens backed by theme colors */
-    --app-bg: var(--color-minecraft-slate-900);
-    --app-panel: var(--color-minecraft-slate-800);
-    --app-elev: var(--color-minecraft-slate-700);
-    --app-fg: var(--color-minecraft-slate-50);
-    --app-muted: var(--color-minecraft-slate-300);
-    --app-border: var(--color-minecraft-slate-700);
-    --brand-accent-500: var(--color-minecraft-blue-500);
-    --brand-accent-600: var(--color-minecraft-blue-600);
-    --success-500: var(--color-minecraft-green-500);
-    --success-600: var(--color-minecraft-green-600);
-    --danger-600: var(--color-minecraft-red-600);
-    --danger-700: var(--color-minecraft-red-700);
-    --danger-800: var(--color-minecraft-red-800);
-  }
 }
 
 @layer components {
@@ -116,9 +91,8 @@
   }
 
   .app__header {
-    @apply sticky top-0 z-40 flex items-center gap-3 border-b px-4;
-    background-color: color-mix(in oklab, var(--app-bg) 85%, black 15%);
-    border-color: var(--app-border);
+    @apply sticky top-0 z-40 flex items-center gap-3 border-b px-4 border-app-border;
+    background-color: color-mix(in oklab, var(--color-app-bg) 85%, black 15%);
   }
 
   .app__brand {
@@ -126,21 +100,16 @@
   }
 
   .app__badge {
-    @apply inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold border;
-    border-color: var(--app-border);
-    background-color: var(--success-600);
-    color: white;
+    @apply inline-flex items-center rounded px-2 py-0.5 text-xs font-semibold border border-app-border bg-success-600 text-white;
   }
 
   .app__body {
     @apply grid;
-    grid-template-columns: var(--width-sidenav) 1fr;
+    grid-template-columns: 16rem 1fr;
   }
 
   .app__sidebar {
-    @apply hidden md:flex md:flex-col gap-1 border-r p-4;
-    background-color: var(--app-panel);
-    border-color: var(--app-border);
+    @apply hidden md:flex md:flex-col gap-1 border-r p-4 bg-app-panel border-app-border;
   }
 
   .app__content {
@@ -151,66 +120,52 @@
   .nav { @apply flex flex-col gap-1; }
 
   .nav__link {
-    @apply w-full text-left rounded-md px-3 py-2 text-sm border transition-colors;
-    color: var(--app-fg);
-    border-color: transparent;
-    background-color: color-mix(in oklab, var(--app-panel) 96%, transparent);
+    @apply w-full text-left rounded-md px-3 py-2 text-sm border transition-colors text-app-fg border-transparent bg-app-panel/95;
   }
 
   .nav__link:hover {
-    border-color: var(--app-border);
-    background-color: color-mix(in oklab, var(--app-panel) 88%, transparent);
+    @apply border-app-border bg-app-panel/90;
   }
 
   .nav__link--active {
-    border-color: var(--brand-accent-500);
-    outline: 2px solid color-mix(in oklab, var(--brand-accent-500) 35%, transparent);
-    background-color: color-mix(in oklab, var(--brand-accent-500) 20%, var(--app-panel));
+    @apply border-brand-accent bg-brand-accent/20;
+    outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent);
   }
 
   /* Panels / cards - utilities moved to top level */
 
   /* Sections */
   .section { @apply space-y-2; }
-  .section__title { @apply text-xs font-semibold uppercase tracking-wider; color: var(--app-muted); }
-  .divider { @apply my-4 h-px w-full; background-color: var(--app-border); }
+  .section__title { @apply text-xs font-semibold uppercase tracking-wider text-app-muted; }
+  .divider { @apply my-4 h-px w-full bg-app-border; }
 
   /* Buttons - utilities moved to top level */
 
   /* Form controls */
   .field { @apply grid gap-1; }
-  .field__label { @apply text-xs font-medium; color: var(--app-muted); }
+  .field__label { @apply text-xs font-medium text-app-muted; }
   .field__control { @apply relative; }
-  .field__input { @apply w-full rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:ring-2; border-color: var(--app-border); color: var(--app-fg); }
-  .field__input:focus { --tw-ring-color: var(--brand-accent-500); border-color: var(--brand-accent-500); }
+  .field__input { @apply w-full rounded-md border bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 border-app-border text-app-fg; }
+  .field__input:focus { @apply ring-brand-accent border-brand-accent; }
 
   /* Badges - utilities moved to top level */
-  .badge--on { color: black; background-color: var(--color-minecraft-green-300); border-color: var(--color-minecraft-green-400); }
+  .badge--on { @apply text-black bg-minecraft-green-300 border-minecraft-green-400; }
 }
 
-@layer utilities {
-  .surface { background-color: var(--app-panel); border-color: var(--app-border); }
-}
-
-/* Map existing markup in index.html to styled components */
 @layer components {
   /* Top toolbar */
   .top-toolbar {
-    @apply sticky top-0 z-50 flex h-12 items-center justify-between border-b px-3 md:px-4;
-    background-color: color-mix(in oklab, var(--app-bg) 85%, black 15%);
-    border-color: var(--app-border);
+    @apply sticky top-0 z-50 flex h-12 items-center justify-between border-b px-3 md:px-4 border-app-border;
+    background-color: color-mix(in oklab, var(--color-app-bg) 85%, black 15%);
   }
   .app-title { @apply text-sm md:text-base font-semibold; }
   .toolbar-nav { @apply flex items-center gap-1; }
   .nav-btn {
-    @apply rounded-md border px-3 py-1.5 text-xs md:text-sm font-medium transition-colors;
-    color: var(--app-fg);
-    border-color: transparent;
-    background-color: color-mix(in oklab, var(--app-panel) 96%, transparent);
+    @apply rounded-md border px-3 py-1.5 text-xs md:text-sm font-medium transition-colors text-app-fg border-transparent bg-app-panel/95;
   }
-  .nav-btn:hover { border-color: var(--app-border); background-color: color-mix(in oklab, var(--app-panel) 88%, transparent); }
-  .nav-btn.active { border-color: var(--brand-accent-500); outline: 2px solid color-mix(in oklab, var(--brand-accent-500) 35%, transparent); background-color: color-mix(in oklab, var(--brand-accent-500) 20%, var(--app-panel)); }
-  .toolbar-icon-btn { @apply grid h-8 w-8 place-items-center rounded-md border text-sm; border-color: var(--app-border); }
+  .nav-btn:hover { @apply border-app-border bg-app-panel/90; }
+  .nav-btn.active { @apply border-brand-accent bg-brand-accent/20; outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent); }
+  .toolbar-icon-btn { @apply grid h-8 w-8 place-items-center rounded-md border text-sm border-app-border; }
 
   /* Layout */
   .app-layout { @apply relative; }
@@ -219,14 +174,12 @@
   .app-header p { @apply text-sm; }
 
   /* Slideout sidepanel (mobile) */
-  .mobile-menu-toggle { @apply md:hidden absolute left-3 top-14 z-40 grid h-10 w-10 place-items-center rounded-md border; border-color: var(--app-border); background-color: var(--app-panel); }
-  .mobile-menu-toggle > span { @apply block h-0.5 w-5 rounded; background-color: var(--app-fg); }
+  .mobile-menu-toggle { @apply md:hidden absolute left-3 top-14 z-40 grid h-10 w-10 place-items-center rounded-md border border-app-border bg-app-panel; }
+  .mobile-menu-toggle > span { @apply block h-0.5 w-5 rounded bg-app-fg; }
   .mobile-menu-toggle > span + span { @apply mt-1; }
 
   .actions-sidepanel {
-    @apply fixed left-0 top-0 z-50 h-full w-72 -translate-x-full transform border-r p-4 transition-transform md:hidden;
-    background-color: var(--app-panel);
-    border-color: var(--app-border);
+    @apply fixed left-0 top-0 z-50 h-full w-72 -translate-x-full transform border-r p-4 transition-transform md:hidden bg-app-panel border-app-border;
   }
   .actions-sidepanel.open { @apply translate-x-0; }
   .sidepanel-header { @apply mb-3 flex items-center justify-between; }
@@ -255,12 +208,12 @@
   /* Installations grid/cards */
   .installations-grid { @apply grid gap-3 md:grid-cols-2 lg:grid-cols-3; }
   .installation-card { @apply panel hover-lift; }
-  .installation-card.selected { border-color: var(--brand-accent-500); outline: 2px solid color-mix(in oklab, var(--brand-accent-500) 35%, transparent); }
-  .installation-header { @apply flex items-center justify-between border-b px-4 py-3; border-color: var(--app-border); }
+  .installation-card.selected { @apply border-brand-accent; outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent); }
+  .installation-header { @apply flex items-center justify-between border-b px-4 py-3 border-app-border; }
   .installation-title { @apply flex items-center gap-2; }
   .installation-title h3 { @apply text-sm font-semibold; }
   .preset-icon { @apply size-6 rounded-sm object-cover; }
-  .preview-badge { @apply badge; background-color: var(--brand-accent-600); color: white; border-color: color-mix(in oklab, var(--brand-accent-600) 70%, black 30%); }
+  .preview-badge { @apply badge bg-brand-accent-600 text-white; border-color: color-mix(in oklab, var(--color-brand-accent-600) 70%, black 30%); }
   .installation-path { @apply px-4 pt-2 text-xs text-muted break-all; }
   .installed-preset-info, .no-preset-info { @apply px-4 text-xs; }
   .no-preset-info { @apply text-muted; }
@@ -270,111 +223,54 @@
   /* Presets */
   .presets-grid { @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-3; }
   .preset-card { @apply panel hover-lift cursor-pointer; }
-  .preset-card.selected { border-color: var(--brand-accent-500); outline: 2px solid color-mix(in oklab, var(--brand-accent-500) 35%, transparent); }
-  .preset-header { @apply flex items-center gap-3 border-b px-4 py-3; border-color: var(--app-border); }
+  .preset-card.selected { @apply border-brand-accent; outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent); }
+  .preset-header { @apply flex items-center gap-3 border-b px-4 py-3 border-app-border; }
   .install-preset-btn { @apply m-4 button button--primary; }
 
   /* Empty state */
-  .empty-state { @apply panel p-6 text-center text-sm; color: var(--app-muted); }
+  .empty-state { @apply panel p-6 text-center text-sm text-app-muted; }
 
   /* Drag & drop */
-  .drop-zone { @apply my-6 grid h-28 place-items-center rounded-md border-2 border-dashed; border-color: var(--app-border); background-color: color-mix(in oklab, var(--app-panel) 92%, transparent); }
-  .drop-zone.drag-over { background-color: color-mix(in oklab, var(--brand-accent-500) 10%, var(--app-panel)); border-color: var(--brand-accent-500); }
+  .drop-zone { @apply my-6 grid h-28 place-items-center rounded-md border-2 border-dashed border-app-border bg-app-panel/90; }
+  .drop-zone.drag-over { @apply border-brand-accent bg-brand-accent/10; }
 
   /* Status & progress */
   .status { @apply text-sm; }
-  .status.error { color: var(--danger-600); }
+  .status.error { @apply text-danger-600; }
   .progress-container { @apply mt-2 h-2 w-full overflow-hidden rounded bg-black/30; }
-  .progress-bar { @apply h-full w-1/2 bg-[color:var(--brand-accent-600)]; }
+  .progress-bar { @apply h-full w-1/2 bg-brand-accent-600; }
 
   /* Console */
-  .console-header { @apply mt-6 flex cursor-pointer items-center justify-between rounded-t-md border px-4 py-2; border-color: var(--app-border); background-color: var(--app-panel); }
-  .console-panel { @apply overflow-hidden rounded-b-md border; border-color: var(--app-border); background-color: var(--app-panel); max-height: 18rem; transition: max-height .2s ease; }
+  .console-header { @apply mt-6 flex cursor-pointer items-center justify-between border px-4 py-2 border-app-border bg-app-panel; }
+  .console-panel { @apply overflow-hidden rounded-b-md border border-app-border bg-app-panel; max-height: 18rem; transition: max-height .2s ease; }
   .console-panel.collapsed { max-height: 0; border-top-width: 0; }
   .console-panel.expanded { max-height: 18rem; }
   .console-output { @apply h-56 whitespace-pre-wrap overflow-auto p-3 text-xs font-mono; }
   .console-clear-btn { @apply m-2 self-end button; }
 
+  /* Toolbar menu button */
+  .toolbar-menu-btn { @apply button button--ghost p-2; }
+  
   /* Popovers */
-  .settings-popover, .help-popover { @apply rounded-md border shadow-lg; border-color: var(--app-border); background-color: var(--app-panel); color: var(--app-fg); }
-  .popover-header { @apply flex items-center justify-between border-b px-4 py-2; border-color: var(--app-border); }
+  .settings-popover, .help-popover { @apply rounded-md border shadow-lg border-app-border bg-app-panel text-app-fg; }
+  
+  .toolbar-popover { 
+    @apply rounded-md border shadow-lg border-app-border bg-app-panel text-app-fg fixed top-16 right-1 z-1000 min-w-80;
+  }
+  .popover-header { @apply flex items-center justify-between border-b px-4 py-2 border-app-border; }
   .popover-content { @apply p-4 space-y-4; }
   .setting-group > label { @apply block text-xs font-semibold text-muted mb-1; }
   .setting-buttons { @apply flex flex-wrap gap-2; }
   .setting-btn { @apply button; }
   .setting-btn.danger { @apply button--danger; }
 
-  /* Web Component BEM Classes */
-  /* These classes are used within Web Component shadow DOM */
-  
-  /* Installation Card Component */
-  .wc-installation-card {
-    @apply rounded-lg border p-4 transition-all duration-200;
-    background-color: var(--app-panel);
-    border-color: var(--app-border);
-  }
-  
-  .wc-installation-card.selected {
-    border-color: var(--brand-accent-600);
-    background: color-mix(in oklab, var(--brand-accent-600) 5%, var(--app-panel));
-  }
-  
-  /* Preset Card Component */
-  .wc-preset-card {
-    @apply rounded-lg border p-4 transition-all duration-200 cursor-pointer;
-    background-color: var(--app-panel);
-    border-color: var(--app-border);
-  }
-  
-  .wc-preset-card:hover {
-    @apply -translate-y-0.5 shadow-lg;
-    border-color: var(--brand-accent-500);
-  }
-  
-  .wc-preset-card.selected {
-    border-color: var(--brand-accent-600);
-    background: color-mix(in oklab, var(--brand-accent-600) 5%, var(--app-panel));
-  }
-  
   /* Console Panel Component */
-  .wc-console-panel {
-    @apply rounded-b-lg overflow-hidden transition-all duration-300;
-    background-color: var(--app-bg);
-    border: 1px solid var(--app-border);
-    border-top: none;
+  .console-container {
+    @apply font-mono;
   }
   
-  .wc-console-header {
-    @apply flex justify-between items-center px-4 py-3 rounded-t-lg cursor-pointer select-none;
-    background-color: var(--app-panel);
-    border: 1px solid var(--app-border);
-  }
-  
-  /* Status Bar Component */
-  .wc-status-bar {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg;
-    background-color: var(--app-panel);
-    border: 1px solid var(--app-border);
-  }
-  
-  /* Toolbar Component */
-  .wc-toolbar {
-    @apply flex justify-between items-center p-4 rounded-lg;
-    background-color: var(--app-panel);
-    border: 1px solid var(--app-border);
-  }
-  
-  .wc-toolbar-btn {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm cursor-pointer transition-all duration-200;
-    background-color: var(--app-bg);
-    border: 1px solid var(--app-border);
-  }
-  
-  .wc-toolbar-btn:hover {
-    background-color: var(--app-border);
-  }
-  
-  .wc-toolbar-btn:active {
-    @apply scale-95;
+  .console-output {
+    @apply font-mono;
+    font-feature-settings: "liga" 0, "calt" 0;
   }
 }
