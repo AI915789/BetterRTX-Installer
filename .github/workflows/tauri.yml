@@ -2,10 +2,10 @@ name: Build Tauri App
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, 'v3/**' ]
     paths: [ 'v3/**' ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
     paths: [ 'v3/**' ]
   workflow_dispatch:
 
