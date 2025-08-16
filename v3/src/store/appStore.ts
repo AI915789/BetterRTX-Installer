@@ -44,6 +44,9 @@ interface AppState {
   refreshInstallations: () => Promise<void>;
   refreshPresets: (forceRefresh?: boolean) => Promise<void>;
   clearCache: () => Promise<void>;
+  installRTX: (installPath: string) => Promise<void>;
+  installMaterials: (installPath: string) => Promise<void>;
+  backupSupportFiles: (installPath: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -113,6 +116,42 @@ export const useAppStore = create<AppState>((set, get) => ({
       addConsoleOutput('Cache cleared successfully');
     } catch (error) {
       const errorMsg = `Error clearing cache: ${error}`;
+      addConsoleOutput(errorMsg);
+    }
+  },
+
+  installRTX: async (installPath) => {
+    const { addConsoleOutput } = get();
+    try {
+      addConsoleOutput(`Installing RTX DLSS to ${installPath}...`);
+      await invoke('install_dlss_for_selected', { selectedNames: [installPath] });
+      addConsoleOutput('RTX DLSS installed successfully');
+    } catch (error) {
+      const errorMsg = `Error installing RTX DLSS: ${error}`;
+      addConsoleOutput(errorMsg);
+    }
+  },
+
+  installMaterials: async (installPath) => {
+    const { addConsoleOutput } = get();
+    try {
+      addConsoleOutput(`Updating options for ${installPath}...`);
+      await invoke('update_options_for_selected', { selectedNames: [installPath] });
+      addConsoleOutput('Options updated successfully');
+    } catch (error) {
+      const errorMsg = `Error updating options: ${error}`;
+      addConsoleOutput(errorMsg);
+    }
+  },
+
+  backupSupportFiles: async (installPath) => {
+    const { addConsoleOutput } = get();
+    try {
+      addConsoleOutput(`Creating backup for ${installPath}...`);
+      const backupDir = await invoke('backup_selected', { destDir: 'C:\\Users\\Public\\Documents', selectedNames: [installPath] });
+      addConsoleOutput(`Backup created successfully: ${backupDir}`);
+    } catch (error) {
+      const errorMsg = `Error creating backup: ${error}`;
       addConsoleOutput(errorMsg);
     }
   },

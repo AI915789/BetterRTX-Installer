@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface PackInfo {
   name: string;
@@ -22,8 +22,8 @@ export const PresetCard: React.FC<PresetCardProps> = ({
   onInstall,
 }) => {
   const handleCardClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.install-preset-btn')) return;
-    
+    if ((e.target as HTMLElement).closest(".install-preset-btn")) return;
+
     const newSelected = !selected;
     onSelectionChange?.(preset.uuid, newSelected);
   };
@@ -34,20 +34,22 @@ export const PresetCard: React.FC<PresetCardProps> = ({
   };
 
   return (
-    <div 
+    <div
       className={`preset-card cursor-pointer transition-all duration-200 rounded-lg border p-4 hover:-translate-y-0.5 hover:shadow-lg hover:border-brand-accent ${
-        selected ? 'selected bg-brand-accent/5 border-brand-accent-600' : 'bg-app-panel border-app-border'
+        selected
+          ? "selected bg-brand-accent/5 border-brand-accent-600"
+          : "bg-app-panel border-app-border"
       }`}
       data-uuid={preset.uuid}
       onClick={handleCardClick}
     >
       <div className="preset-header flex items-center gap-3 mb-3">
-        <img 
+        <img
           className="preset-icon w-12 h-12 rounded-lg object-cover"
           src={`https://cdn.jsdelivr.net/gh/BetterRTX/presets@main/data/${preset.uuid}/icon.png`}
           alt={`${preset.name} icon`}
           onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
+            (e.target as HTMLImageElement).style.display = "none";
           }}
         />
         <h3 className="m-0 text-base font-semibold text-app-fg">

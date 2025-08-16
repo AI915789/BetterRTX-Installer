@@ -159,12 +159,21 @@
     background-color: color-mix(in oklab, var(--color-app-bg) 85%, black 15%);
   }
   .app-title { @apply text-sm md:text-base font-semibold; }
-  .toolbar-nav { @apply flex items-center gap-1; }
-  .nav-btn {
-    @apply rounded-md border px-3 py-1.5 text-xs md:text-sm font-medium transition-colors text-app-fg border-transparent bg-app-panel/95;
+    .nav-tabs {
+    @apply flex border-2 border-minecraft-slate-800 bg-minecraft-slate-900 rounded-sm;
   }
-  .nav-btn:hover { @apply border-app-border bg-app-panel/90; }
-  .nav-btn.active { @apply border-brand-accent bg-brand-accent/20; outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent); }
+
+    .nav-btn {
+    @apply flex-1 py-1.5 px-4 text-center cursor-pointer bg-minecraft-slate-600 text-white/80 border-2 border-transparent -m-px font-semibold uppercase tracking-wider text-xs;
+  }
+
+    .nav-btn:hover {
+    @apply bg-minecraft-slate-500 text-white;
+  }
+
+  .nav-btn.active {
+    @apply bg-minecraft-slate-500 text-white border-b-2 border-b-white/90;
+  }
   .toolbar-icon-btn { @apply grid h-8 w-8 place-items-center rounded-md border text-sm border-app-border; }
 
   /* Layout */
@@ -207,11 +216,12 @@
 
   /* Installations grid/cards */
   .installations-grid { @apply grid gap-3 md:grid-cols-2 lg:grid-cols-3; }
-  .installation-card { @apply panel hover-lift; }
+  .installation-card { @apply panel cursor-pointer; }
   .installation-card.selected { @apply border-brand-accent; outline: 2px solid color-mix(in oklab, var(--color-brand-accent) 35%, transparent); }
   .installation-header { @apply flex items-center justify-between border-b px-4 py-3 border-app-border; }
   .installation-title { @apply flex items-center gap-2; }
   .installation-title h3 { @apply text-sm font-semibold; }
+  .installation-checkbox { @apply cursor-pointer accent-brand-accent bg-minecraft-slate-500 border-minecraft-slate-800 appearance-none rounded-xs; }
   .preset-icon { @apply size-6 rounded-sm object-cover; }
   .preview-badge { @apply badge bg-brand-accent-600 text-white; border-color: color-mix(in oklab, var(--color-brand-accent-600) 70%, black 30%); }
   .installation-path { @apply px-4 pt-2 text-xs text-app-muted break-all font-mono select-all; }

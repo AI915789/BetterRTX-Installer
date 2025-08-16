@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { cx } from 'classix';
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { cx } from "classix";
 
 interface ConsolePanelProps {
   output?: string[];
@@ -38,7 +38,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
   return (
     <div className="console-container">
-      <div 
+      <div
         className="console-header flex justify-between items-center px-4 py-3 cursor-pointer select-none bg-app-panel border-app-border"
         onClick={handleToggle}
       >
@@ -53,21 +53,22 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
           )}
         </span>
       </div>
-      
-      <div 
+
+      <div
         className={`console-panel border border-t-0 overflow-hidden transition-all duration-300 bg-app-bg border-app-border ${
-          isExpanded ? 'console-panel--expanded' : 'console-panel--collapsed'
+          isExpanded ? "console-panel--expanded" : "console-panel--collapsed"
         }`}
       >
-        <div 
+        <div
           ref={outputRef}
           className="console-output p-4 text-xs h-64 overflow-y-auto whitespace-pre-wrap break-all relative text-app-muted"
         >
-          {output.length > 0 ? output.join('\n') : 'No output yet...'}
-          
+          {output.length > 0 ? output.join("\n") : "No output yet..."}
+
           <button
-            className={cx("console-clear-btn fixed left-auto bottom-2 right-6 px-3 py-1 text-xs border cursor-pointer hover:bg-opacity-80 transition-colors bg-app-panel border-app-border text-app-fg",
-              isExpanded ? 'block' : 'hidden'
+            className={cx(
+              "console-clear-btn fixed left-auto bottom-2 right-6 px-3 py-1 text-xs border cursor-pointer hover:bg-opacity-80 transition-colors bg-app-panel border-app-border text-app-fg",
+              isExpanded ? "block" : "hidden"
             )}
             onClick={handleClear}
           >
