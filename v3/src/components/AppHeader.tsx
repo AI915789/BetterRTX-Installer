@@ -37,6 +37,12 @@ export default function AppHeader() {
         >
           {t("tab_actions")}
         </button>
+        <button
+          className={cx("nav-btn", activeTab === "creator" && "active")}
+          onClick={() => setActiveTab("creator")}
+        >
+          Creator
+        </button>
       </nav>
       <div className="toolbar-right">
         {/* Menu button to show toolbar */}

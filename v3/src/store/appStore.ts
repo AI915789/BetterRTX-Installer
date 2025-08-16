@@ -27,7 +27,7 @@ interface AppState {
   selectedInstallations: Set<string>;
   selectedPreset: string | null;
   consoleOutput: string[];
-  activeTab: 'installations' | 'presets' | 'actions';
+  activeTab: 'installations' | 'presets' | 'actions' | 'creator';
   toolbarOpen: boolean;
 
   // Actions
@@ -35,7 +35,7 @@ interface AppState {
   setPresets: (presets: PackInfo[]) => void;
   setSelectedInstallations: (selected: Set<string>) => void;
   setSelectedPreset: (preset: string | null) => void;
-  setActiveTab: (tab: 'installations' | 'presets' | 'actions') => void;
+  setActiveTab: (tab: 'installations' | 'presets' | 'actions' | 'creator') => void;
   setToolbarOpen: (open: boolean) => void;
   addConsoleOutput: (message: string) => void;
   clearConsole: () => void;

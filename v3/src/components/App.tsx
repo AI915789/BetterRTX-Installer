@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 
 import { InstallationCard } from "./InstallationCard";
 import { StatusBarContainer } from "./StatusBar";
 import { ConsolePanel } from "./ConsolePanel";
 import { RtpackDialog } from "./RtpackDialog";
+import { DeepLinkDialog } from "./DeepLinkDialog";
 import { useAppStore } from "../store/appStore";
-import { useStatusStore } from "../store/statusStore";
 import AppHeader from "./AppHeader";
 import ActionsTab from "./ActionsTab";
 import PresetsTab from "./PresetsTab";
+import CreatorTab from "./CreatorTab";
 
 export const App: React.FC = () => {
   const { t } = useTranslation();
-  const { addMessage } = useStatusStore();
   const [rtpackDialogOpen, setRtpackDialogOpen] = useState(false);
   const [rtpackPath, setRtpackPath] = useState("");
+  const [deepLinkDialogOpen, setDeepLinkDialogOpen] = useState(false);
+  const [deepLinkUrl, setDeepLinkUrl] = useState("");
   const {
     installations,
     selectedInstallations,
     consoleOutput,
     activeTab,
     setSelectedInstallations,
-    addConsoleOutput,
     clearConsole,
     refreshInstallations,
     refreshPresets,
@@ -40,6 +40,18 @@ export const App: React.FC = () => {
     const unlisten = listen<string>("rtpack-file-opened", (event) => {
       setRtpackPath(event.payload);
       setRtpackDialogOpen(true);
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  // Listen for deep link protocol events
+  useEffect(() => {
+    const unlisten = listen<string>("deep-link-received", (event) => {
+      setDeepLinkUrl(event.payload);
+      setDeepLinkDialogOpen(true);
     });
 
     return () => {
@@ -129,6 +141,10 @@ export const App: React.FC = () => {
           {activeTab === "actions" && (
             <ActionsTab />
           )}
+
+          {activeTab === "creator" && (
+            <CreatorTab />
+          )}
         </div>
       </main>
 
@@ -142,6 +158,13 @@ export const App: React.FC = () => {
         isOpen={rtpackDialogOpen}
         rtpackPath={rtpackPath}
         onClose={() => setRtpackDialogOpen(false)}
+      />
+
+      {/* Deep Link Dialog */}
+      <DeepLinkDialog
+        isOpen={deepLinkDialogOpen}
+        deepLinkUrl={deepLinkUrl}
+        onClose={() => setDeepLinkDialogOpen(false)}
       />
     </div>
   );

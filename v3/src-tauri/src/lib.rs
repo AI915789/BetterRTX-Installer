@@ -11,6 +11,7 @@ use winreg::enums::*;
 use winreg::RegKey;
 use std::collections::HashMap;
 use tauri::Emitter;
+use url::Url;
 
 const BRTX_DIR_NAME: &str = "graphics.bedrock";
 
@@ -944,6 +945,35 @@ fn update_options_for_selected(selected_names: Vec<String>) -> Result<(), String
 }
 
 #[tauri::command]
+fn register_brtx_protocol() -> Result<(), String> {
+    let hkcu = RegKey::predef(HKEY_CURRENT_USER);
+    let classes = hkcu.open_subkey_with_flags("Software\\Classes", KEY_ALL_ACCESS).map_err(|e| e.to_string())?;
+    
+    // Register brtx:// protocol
+    let brtx_key = classes.create_subkey("brtx").map_err(|e| e.to_string())?.0;
+    brtx_key.set_value("", &"URL:BetterRTX Protocol").map_err(|e| e.to_string())?;
+    brtx_key.set_value("URL Protocol", &"").map_err(|e| e.to_string())?;
+    
+    // Set icon
+    let icon_path = brtx_dir().join("brtx.ico");
+    if !icon_path.exists() {
+        if let Ok(mut resp) = get("https://bedrock.graphics/favicon.ico") {
+            let mut f = File::create(&icon_path).map_err(|e| e.to_string())?;
+            let _ = resp.copy_to(&mut f);
+        }
+    }
+    let _ = brtx_key.set_value("DefaultIcon", &format!("{},0", icon_path.display()));
+    
+    // Shell open command -> this app exe
+    let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+    let shell_open = brtx_key.create_subkey("shell\\open\\command").map_err(|e| e.to_string())?.0;
+    let cmd = format!("\"{}\" \"%1\"", exe.display());
+    shell_open.set_value("", &cmd).map_err(|e| e.to_string())?;
+    
+    Ok(())
+}
+
+#[tauri::command]
 fn register_rtpack_extension() -> Result<(), String> {
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
     let classes = hkcu.open_subkey_with_flags("Software\\Classes", KEY_ALL_ACCESS).map_err(|e| e.to_string())?;
@@ -1017,6 +1047,122 @@ fn handle_file_drop(_paths: Vec<String>) -> Result<(), String> {
     Ok(())
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct ProtocolData {
+    protocol_type: String, // "preset" or "creator"
+    id: String,
+}
+
+#[tauri::command]
+fn handle_deep_link(url: String) -> Result<ProtocolData, String> {
+    let parsed_url = Url::parse(&url).map_err(|e| format!("Invalid URL: {}", e))?;
+    
+    if parsed_url.scheme() != "brtx" {
+        return Err("Invalid protocol scheme".to_string());
+    }
+    
+    let path = parsed_url.path();
+    let parts: Vec<&str> = path.trim_start_matches('/').split('/').collect();
+    
+    if parts.len() != 2 {
+        return Err("Invalid URL format. Expected brtx://preset/[uuid] or brtx://creator/[hash]".to_string());
+    }
+    
+    let protocol_type = parts[0].to_string();
+    let id = parts[1].to_string();
+    
+    if protocol_type != "preset" && protocol_type != "creator" {
+        return Err("Invalid protocol type. Expected 'preset' or 'creator'".to_string());
+    }
+    
+    Ok(ProtocolData { protocol_type, id })
+}
+
+#[tauri::command]
+fn download_preset_by_uuid(uuid: String, selected_names: Vec<String>) -> Result<(), String> {
+    // Get preset info from API
+    let url = format!("https://bedrock.graphics/api/preset/{}", uuid);
+    let client = Client::new();
+    let response = client.get(&url).send().map_err(|e| e.to_string())?;
+    let preset: PackInfo = response.json().map_err(|e| e.to_string())?;
+    
+    // Use existing download and install logic
+    download_and_install_pack(preset.uuid, selected_names)
+}
+
+#[tauri::command]
+fn download_creator_settings(settings_hash: String, selected_names: Vec<String>) -> Result<(), String> {
+    let base_url = format!("https://bedrock.graphics/build/{}", settings_hash);
+    let dir = brtx_dir().join("creator").join(&settings_hash);
+    ensure_dir(&dir).map_err(|e| e.to_string())?;
+    
+    let client = Client::new();
+    
+    // Download the three material.bin files directly
+    let files = [
+        ("stubs/RTXStub.material.bin", "RTXStub.material.bin"),
+        ("RTXPostFX.Tonemapping.material.bin", "RTXPostFX.Tonemapping.material.bin"),
+        ("RTXPostFX.Bloom.material.bin", "RTXPostFX.Bloom.material.bin"),
+    ];
+    
+    let dl = |url_path: &str, filename: &str| -> Result<(), String> {
+        let full_url = format!("{}/{}", base_url, url_path);
+        let file_path = dir.join(filename);
+        
+        // Check cache first
+        if let Some(cached_data) = get_cached_download(&full_url) {
+            fs::write(&file_path, cached_data).map_err(|e| e.to_string())?;
+            return Ok(());
+        }
+        
+        // Download fresh data
+        let mut resp = client.get(&full_url).send().map_err(|e| e.to_string())?;
+        let mut data = Vec::new();
+        resp.copy_to(&mut data).map_err(|e| e.to_string())?;
+        
+        // Cache the download
+        let _ = cache_download(&full_url, &data);
+        
+        // Save to file
+        fs::write(&file_path, data).map_err(|e| e.to_string())?;
+        Ok(())
+    };
+    
+    for (url_path, filename) in &files {
+        dl(url_path, filename)?;
+    }
+    
+    // Install the downloaded materials
+    let materials = vec![
+        dir.join("RTXStub.material.bin"),
+        dir.join("RTXPostFX.Tonemapping.material.bin"),
+        dir.join("RTXPostFX.Bloom.material.bin"),
+    ];
+    
+    let all = list_installations()?;
+    let map: std::collections::HashMap<_, _> = all
+        .into_iter()
+        .map(|i| (i.install_location.clone(), i))
+        .collect();
+        
+    for install_location in selected_names {
+        if let Some(ins) = map.get(&install_location) {
+            let creator_pack = PackInfo {
+                name: format!("Creator Settings ({})", &settings_hash[..8]),
+                uuid: format!("creator-{}", settings_hash),
+                stub: String::new(),
+                tonemapping: String::new(),
+                bloom: String::new(),
+            };
+            copy_shader_files(&ins.install_location, &materials, &creator_pack)?;
+        } else {
+            println!("⚠ Skipping unknown selection (no matching installation): {}", install_location);
+        }
+    }
+    
+    Ok(())
+}
+
 #[tauri::command]
 fn uninstall_package(restore_initial: bool) -> Result<(), String> {
     if restore_initial {
@@ -1060,12 +1206,14 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            // Handle command line arguments for file associations
+            // Handle command line arguments for file associations and deep links
             let args: Vec<String> = std::env::args().collect();
             if args.len() > 1 {
-                let file_path = &args[1];
-                if file_path.to_lowercase().ends_with(".rtpack") && std::path::Path::new(file_path).exists() {
-                    let _ = app.emit("rtpack-file-opened", file_path);
+                let arg = &args[1];
+                if arg.to_lowercase().ends_with(".rtpack") && std::path::Path::new(arg).exists() {
+                    let _ = app.emit("rtpack-file-opened", arg);
+                } else if arg.starts_with("brtx://") {
+                    let _ = app.emit("deep-link-received", arg);
                 }
             }
 
@@ -1082,12 +1230,16 @@ pub fn run() {
             install_dlss_for_selected,
             update_options_for_selected,
             register_rtpack_extension,
+            register_brtx_protocol,
             check_iobit_unlocker,
             set_iobit_path,
             handle_file_drop,
             uninstall_package,
             clear_cache,
             get_cache_info,
+            handle_deep_link,
+            download_preset_by_uuid,
+            download_creator_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

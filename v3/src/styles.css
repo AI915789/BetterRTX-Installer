@@ -458,4 +458,53 @@
   .switch__track-background + .switch__track-background {
     @apply right-0 rounded-r border-2 border-l-0 border-minecraft-slate-200/30 text-minecraft-slate-900/50 opacity-100 group-data-checked:opacity-0;
   }
+
+  /* Dialog Components */
+  .dialog-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
+  }
+
+  .dialog {
+    @apply panel max-w-md w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col;
+  }
+
+  .dialog__header {
+    @apply panel__header flex items-center justify-between;
+  }
+
+  .dialog__title {
+    @apply panel__title;
+  }
+
+  .dialog__close {
+    @apply w-6 h-6 flex items-center justify-center rounded text-app-muted hover:text-app-fg hover:bg-app-border transition-colors;
+  }
+
+  .dialog__content {
+    @apply panel__body flex-1 overflow-y-auto;
+  }
+
+  .dialog__actions {
+    @apply flex justify-end gap-2 p-4 border-t border-app-border;
+  }
+
+  .error-message {
+    @apply p-3 rounded border border-danger-600 bg-danger-600/10 text-danger-600;
+  }
+
+  .protocol-info {
+    @apply space-y-2;
+  }
+
+  .protocol-details {
+    @apply space-y-1 text-sm;
+  }
+
+  .installation-selection {
+    @apply space-y-2;
+  }
+
+  .loading {
+    @apply text-center text-app-muted;
+  }
 }
