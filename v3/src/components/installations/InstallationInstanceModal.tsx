@@ -20,10 +20,12 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
   installations,
   presetName,
   onInstall,
-  isInstalling = false
+  isInstalling = false,
 }) => {
   const { t } = useTranslation();
-  const [selectedInstallations, setSelectedInstallations] = useState<Set<string>>(new Set());
+  const [selectedInstallations, setSelectedInstallations] = useState<
+    Set<string>
+  >(new Set());
 
   const handleInstallationToggle = (installPath: string): void => {
     const newSelected = new Set(selectedInstallations);
@@ -39,7 +41,9 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
     if (selectedInstallations.size === installations.length) {
       setSelectedInstallations(new Set());
     } else {
-      setSelectedInstallations(new Set(installations.map(inst => inst.InstallLocation)));
+      setSelectedInstallations(
+        new Set(installations.map((inst) => inst.InstallLocation))
+      );
     }
   };
 
@@ -66,22 +70,21 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
         <p className="installation-modal__description">
           {t("select_installations_description")}
         </p>
-        
+
         <div className="installation-modal__controls">
           <Button
             className="btn btn--secondary"
             onClick={handleSelectAll}
             disabled={isInstalling}
           >
-            {selectedInstallations.size === installations.length 
-              ? t("deselect_all") 
-              : t("select_all")
-            }
+            {selectedInstallations.size === installations.length
+              ? t("deselect_all")
+              : t("select_all")}
           </Button>
           <span className="installation-modal__count">
-            {t("selected_count", { 
-              selected: selectedInstallations.size, 
-              total: installations.length 
+            {t("selected_count", {
+              selected: selectedInstallations.size,
+              total: installations.length,
             })}
           </span>
         </div>
@@ -92,15 +95,20 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
               key={installation.InstallLocation}
               className={cx(
                 "installation-item",
-                selectedInstallations.has(installation.InstallLocation) && "installation-item--selected"
+                selectedInstallations.has(installation.InstallLocation) &&
+                  "installation-item--selected"
               )}
             >
               <label className="installation-item__label">
                 <input
                   type="checkbox"
                   className="installation-item__checkbox"
-                  checked={selectedInstallations.has(installation.InstallLocation)}
-                  onChange={() => handleInstallationToggle(installation.InstallLocation)}
+                  checked={selectedInstallations.has(
+                    installation.InstallLocation
+                  )}
+                  onChange={() =>
+                    handleInstallationToggle(installation.InstallLocation)
+                  }
                   disabled={isInstalling}
                 />
                 <div className="installation-item__info">
@@ -117,7 +125,8 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
                   )}
                   {installation.installed_preset && (
                     <span className="installation-item__preset">
-                      {t("current_preset")}: {installation.installed_preset.name}
+                      {t("current_preset")}:{" "}
+                      {installation.installed_preset.name}
                     </span>
                   )}
                 </div>
@@ -139,10 +148,9 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
             onClick={handleInstall}
             disabled={selectedInstallations.size === 0 || isInstalling}
           >
-            {isInstalling 
-              ? t("installing") 
-              : t("install_to_selected", { count: selectedInstallations.size })
-            }
+            {isInstalling
+              ? t("installing")
+              : t("install_to_selected", { count: selectedInstallations.size })}
           </Button>
         </div>
       </div>

@@ -28,12 +28,15 @@ export default function CreatorTab() {
         settingsHash: settingsHash.trim(),
         selectedNames,
       });
-      
+
       addMessage({
-        message: `Successfully installed creator settings ${settingsHash.slice(0, 8)}...`,
+        message: `Successfully installed creator settings ${settingsHash.slice(
+          0,
+          8
+        )}...`,
         type: "success",
       });
-      
+
       setSettingsHash("");
     } catch (error) {
       addMessage({
@@ -47,7 +50,7 @@ export default function CreatorTab() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!settingsHash.trim()) {
       addMessage({
         message: "Please enter a settings hash",

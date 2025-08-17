@@ -69,8 +69,8 @@ export const StatusBarContainer: React.FC = () => {
   };
 
   const handleMouseLeave = (id: string): void => {
-    const message = messages.find(msg => msg.id === id);
-    if (message && message.type !== 'loading') {
+    const message = messages.find((msg) => msg.id === id);
+    if (message && message.type !== "loading") {
       setTimeout(() => {
         removeMessage(id);
       }, 5000);

@@ -18,7 +18,9 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
   const { t } = useTranslation();
   const { installations, refreshInstallations } = useAppStore();
   const { addMessage } = useStatusStore();
-  const [selectedInstallations, setSelectedInstallations] = useState<Set<string>>(new Set());
+  const [selectedInstallations, setSelectedInstallations] = useState<
+    Set<string>
+  >(new Set());
   const [isInstalling, setIsInstalling] = useState(false);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
     setIsInstalling(true);
     try {
       addMessage({ message: t("status_installing_rtpack"), type: "loading" });
-      
+
       await invoke("install_from_rtpack", {
         rtpackPath,
         selectedNames: Array.from(selectedInstallations),
@@ -70,7 +72,9 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
     if (selectedInstallations.size === installations.length) {
       setSelectedInstallations(new Set());
     } else {
-      setSelectedInstallations(new Set(installations.map(i => i.InstallLocation)));
+      setSelectedInstallations(
+        new Set(installations.map((i) => i.InstallLocation))
+      );
     }
   };
 
@@ -90,8 +94,18 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             disabled={isInstalling}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -115,13 +129,17 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
               className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
               disabled={isInstalling}
             >
-              {selectedInstallations.size === installations.length ? t("deselect_all") : t("select_all")}
+              {selectedInstallations.size === installations.length
+                ? t("deselect_all")
+                : t("select_all")}
             </button>
           </div>
 
           {installations.length === 0 ? (
             <div className="text-center py-4">
-              <p className="text-gray-500 dark:text-gray-400">{t("no_minecraft_installations")}</p>
+              <p className="text-gray-500 dark:text-gray-400">
+                {t("no_minecraft_installations")}
+              </p>
             </div>
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -132,8 +150,12 @@ export const RtpackDialog: React.FC<RtpackDialogProps> = ({
                 >
                   <input
                     type="checkbox"
-                    checked={selectedInstallations.has(installation.InstallLocation)}
-                    onChange={() => handleInstallationToggle(installation.InstallLocation)}
+                    checked={selectedInstallations.has(
+                      installation.InstallLocation
+                    )}
+                    onChange={() =>
+                      handleInstallationToggle(installation.InstallLocation)
+                    }
                     disabled={isInstalling}
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />

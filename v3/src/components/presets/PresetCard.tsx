@@ -45,7 +45,7 @@ export const PresetCard: React.FC<PresetCardProps> = ({
     <div
       className={cx(
         "preset-card",
-        selected 
+        selected
           ? "selected bg-brand-accent/5 border-brand-accent-600"
           : "bg-app-panel"
       )}
@@ -53,21 +53,36 @@ export const PresetCard: React.FC<PresetCardProps> = ({
       onClick={handleCardClick}
     >
       <div className="flex flex-col w-full">
-      <img
-        className="preset-icon w-full h-auto"
-        src={`https://cdn.jsdelivr.net/gh/BetterRTX/presets@main/data/${preset.uuid}/icon.png`}
-        alt={`${preset.name} icon`}
-        onError={(e) => {
-          (e.target as HTMLImageElement).style.display = "none";
-        }}
-      />
-      <h3 className="preset-header">
-        {preset.name}
-      </h3>
+        <img
+          className="preset-icon w-full h-auto"
+          src={`https://cdn.jsdelivr.net/gh/BetterRTX/presets@main/data/${preset.uuid}/icon.png`}
+          alt={`${preset.name} icon`}
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+        <h3 className="preset-header">{preset.name}</h3>
       </div>
-      <div className={cx("preset-details", "overflow-hidden", !selected ? "max-h-0" : "max-h-full")}>
+      <div
+        className={cx(
+          "preset-details",
+          "overflow-hidden",
+          !selected ? "max-h-0" : "max-h-full"
+        )}
+      >
         <div className="flex flex-col gap-1 text-xs">
-          <p>View on <a className="preset-link" href={`https://bedrock.graphics/presets/${preset.slug ?? preset.uuid}`} target="_blank">bedrock.graphics</a></p>
+          <p>
+            View on{" "}
+            <a
+              className="preset-link"
+              href={`https://bedrock.graphics/presets/${
+                preset.slug ?? preset.uuid
+              }`}
+              target="_blank"
+            >
+              bedrock.graphics
+            </a>
+          </p>
           <dl>
             <dt>Stub</dt>
             <dd>
@@ -85,11 +100,7 @@ export const PresetCard: React.FC<PresetCardProps> = ({
         </div>
       </div>
       <Button
-        className={cx(
-          "btn",
-          !isInstalling && "btn--primary",
-          "h-min sm:w-fit"
-        )}
+        className={cx("btn", !isInstalling && "btn--primary", "h-min sm:w-fit")}
         onClick={handleInstallClick}
         disabled={isInstalling}
         data-uuid={preset.uuid}

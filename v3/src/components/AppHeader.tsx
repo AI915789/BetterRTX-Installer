@@ -5,17 +5,14 @@ import { ToolbarSection } from "./ToolbarSection";
 import Logo from "./Logo";
 
 export default function AppHeader() {
-  const {
-    toolbarOpen,
-    setToolbarOpen,
-  } = useAppStore();
+  const { toolbarOpen, setToolbarOpen } = useAppStore();
   const { t } = useTranslation();
   return (
     <header className="top-toolbar">
       <div className="toolbar-left">
         <Logo width={163} height={32} />
       </div>
-      
+
       <div className="toolbar-right">
         {/* Menu button to show toolbar */}
         <button

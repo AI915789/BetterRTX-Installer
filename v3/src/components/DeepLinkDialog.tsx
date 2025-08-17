@@ -35,7 +35,9 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
   const parseDeepLink = async () => {
     try {
       setError(null);
-      const data = await invoke<ProtocolData>("handle_deep_link", { url: deepLinkUrl });
+      const data = await invoke<ProtocolData>("handle_deep_link", {
+        url: deepLinkUrl,
+      });
       setProtocolData(data);
     } catch (err) {
       setError(err as string);
@@ -44,28 +46,40 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
 
   const handleInstall = async () => {
     if (!protocolData || selectedInstallations.size === 0) {
-      addMessage({ message: "Please select at least one installation", type: "error" });
+      addMessage({
+        message: "Please select at least one installation",
+        type: "error",
+      });
       return;
     }
 
     setIsProcessing(true);
     try {
       const selectedNames = Array.from(selectedInstallations);
-      
+
       if (protocolData.protocol_type === "preset") {
         await invoke("download_preset_by_uuid", {
           uuid: protocolData.id,
           selectedNames,
         });
-        addMessage({ message: `Successfully installed preset ${protocolData.id}`, type: "success" });
+        addMessage({
+          message: `Successfully installed preset ${protocolData.id}`,
+          type: "success",
+        });
       } else if (protocolData.protocol_type === "creator") {
         await invoke("download_creator_settings", {
           settingsHash: protocolData.id,
           selectedNames,
         });
-        addMessage({ message: `Successfully installed creator settings ${protocolData.id.slice(0, 8)}...`, type: "success" });
+        addMessage({
+          message: `Successfully installed creator settings ${protocolData.id.slice(
+            0,
+            8
+          )}...`,
+          type: "success",
+        });
       }
-      
+
       onClose();
     } catch (err) {
       addMessage({ message: `Installation failed: ${err}`, type: "error" });
@@ -81,7 +95,9 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
       <div className="dialog">
         <div className="dialog__header">
           <h2 className="dialog__title">
-            {protocolData?.protocol_type === "preset" ? "Install Preset" : "Install Creator Settings"}
+            {protocolData?.protocol_type === "preset"
+              ? "Install Preset"
+              : "Install Creator Settings"}
           </h2>
           <button
             className="dialog__close"
@@ -108,8 +124,12 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
               </div>
 
               <div className="protocol-details">
-                <p><strong>Type:</strong> {protocolData.protocol_type}</p>
-                <p><strong>ID:</strong> {protocolData.id}</p>
+                <p>
+                  <strong>Type:</strong> {protocolData.protocol_type}
+                </p>
+                <p>
+                  <strong>ID:</strong> {protocolData.id}
+                </p>
               </div>
 
               <div className="installation-selection">
@@ -118,12 +138,15 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
                 </p>
                 {selectedInstallations.size === 0 ? (
                   <p className="text-sm opacity-75 italic">
-                    No installations selected. Please go to the Installations tab and select target installations.
+                    No installations selected. Please go to the Installations
+                    tab and select target installations.
                   </p>
                 ) : (
                   <ul className="text-sm space-y-1">
                     {Array.from(selectedInstallations).map((path) => {
-                      const installation = installations.find(i => i.InstallLocation === path);
+                      const installation = installations.find(
+                        (i) => i.InstallLocation === path
+                      );
                       return (
                         <li key={path} className="opacity-75">
                           {installation?.FriendlyName || path}
@@ -142,17 +165,15 @@ export const DeepLinkDialog: React.FC<DeepLinkDialogProps> = ({
         </div>
 
         <div className="dialog__actions">
-          <Button
-            theme="secondary"
-            onClick={onClose}
-            disabled={isProcessing}
-          >
+          <Button theme="secondary" onClick={onClose} disabled={isProcessing}>
             Cancel
           </Button>
           <Button
             theme="primary"
             onClick={handleInstall}
-            disabled={isProcessing || !protocolData || selectedInstallations.size === 0}
+            disabled={
+              isProcessing || !protocolData || selectedInstallations.size === 0
+            }
           >
             {isProcessing ? "Installing..." : "Install"}
           </Button>

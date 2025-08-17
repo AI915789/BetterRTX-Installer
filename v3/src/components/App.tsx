@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 
 import { StatusBarContainer } from "./StatusBar";
@@ -11,13 +10,11 @@ import AppHeader from "./AppHeader";
 import ActionsTab from "./ActionsTab";
 import PresetsTab from "./PresetsTab";
 import CreatorTab from "./creator/CreatorTab";
-import InstallationsToolbar from "./installations/InstallationsToolbar";
 import { SideNav } from "./ui/SideNav";
 import InstallationNav from "./installations/InstallationNav";
 import InstallationsTab from "./installations/InstallationsTab";
 
 export const App: React.FC = () => {
-  const { t } = useTranslation();
   const [rtpackDialogOpen, setRtpackDialogOpen] = useState(false);
   const [rtpackPath, setRtpackPath] = useState("");
   const [deepLinkDialogOpen, setDeepLinkDialogOpen] = useState(false);
@@ -77,8 +74,6 @@ export const App: React.FC = () => {
     };
   }, []);
 
-
-
   return (
     <div className="app">
       {/* Top Header */}
@@ -100,21 +95,13 @@ export const App: React.FC = () => {
             <div className="main-content">
               {/* Tab Content */}
               <div className="tab-content">
-                {activeTab === "installations" && (
-                  <InstallationsTab />
-                )}
+                {activeTab === "installations" && <InstallationsTab />}
 
-                {activeTab === "presets" && (
-                  <PresetsTab />
-                )}
+                {activeTab === "presets" && <PresetsTab />}
 
-                {activeTab === "actions" && (
-                  <ActionsTab />
-                )}
+                {activeTab === "actions" && <ActionsTab />}
 
-                {activeTab === "creator" && (
-                  <CreatorTab />
-                )}
+                {activeTab === "creator" && <CreatorTab />}
               </div>
             </div>
           </main>

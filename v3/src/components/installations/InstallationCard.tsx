@@ -41,7 +41,7 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
     <div
       className={cx(
         "installation-card",
-        selected 
+        selected
           ? "selected bg-brand-accent/5 border-brand-accent-600"
           : "bg-app-panel",
         installation.Preview ? "preview order-2" : ""
@@ -57,31 +57,45 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
             </span>
           </div>
         )}
-        <h3 className="installation-header" title={installation.InstallLocation}>
+        <h3
+          className="installation-header"
+          title={installation.InstallLocation}
+        >
           {installation.FriendlyName}
           {installation.Preview && (
             <span className="preview-badge ml-2">Preview</span>
           )}
         </h3>
       </div>
-      
-      <div className={cx("installation-details", "overflow-hidden", !selected ? "max-h-0" : "max-h-full")}>
+
+      <div
+        className={cx(
+          "installation-details",
+          "overflow-hidden",
+          !selected ? "max-h-0" : "max-h-full"
+        )}
+      >
         <div className="flex flex-col gap-2 text-xs">
           {installation.installed_preset ? (
             <div className="installed-preset-info">
               <p className="text-sm font-medium">
-                {t('current_preset', { name: installation.installed_preset.name })}
+                {t("current_preset", {
+                  name: installation.installed_preset.name,
+                })}
               </p>
               <p className="text-xs text-app-muted">
-                Installed: {new Date(installation.installed_preset.installed_at).toLocaleDateString()}
+                Installed:{" "}
+                {new Date(
+                  installation.installed_preset.installed_at
+                ).toLocaleDateString()}
               </p>
             </div>
           ) : (
             <p className="no-preset-info text-sm text-app-muted">
-              {t('no_preset_installed')}
+              {t("no_preset_installed")}
             </p>
           )}
-          
+
           <div>
             <dt className="font-medium text-app-muted">Installation Path</dt>
             <dd>
@@ -90,7 +104,6 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
           </div>
         </div>
       </div>
-      
     </div>
   );
 };

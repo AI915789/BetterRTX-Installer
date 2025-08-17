@@ -21,11 +21,8 @@ export const BlockPath: React.FC<BlockPathProps> = ({
   openInNewTab = true,
   className = "",
 }) => {
-
   const content = (
-    <span className={`preset-stub-link ${className}`}>
-      {path ?? href}
-    </span>
+    <span className={`preset-stub-link ${className}`}>{path ?? href}</span>
   );
 
   return (
