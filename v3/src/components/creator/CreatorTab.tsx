@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import { open } from "@tauri-apps/plugin-dialog";
-import { copyFile, mkdir } from "@tauri-apps/plugin-fs";
 import Button from "../ui/Button";
 import { useAppStore } from "../../store/appStore";
 import { useStatusStore } from "../../store/statusStore";
@@ -19,6 +18,12 @@ export default function CreatorTab() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [pendingInstallData, setPendingInstallData] = useState<{
+    selectedNames: string[];
+    presetName: string;
+  } | null>(null);
+  const [isMaterialModalOpen, setIsMaterialModalOpen] = useState(false);
+  const [isMaterialNameModalOpen, setIsMaterialNameModalOpen] = useState(false);
+  const [pendingMaterialData, setPendingMaterialData] = useState<{
     selectedNames: string[];
     presetName: string;
   } | null>(null);
@@ -79,6 +84,66 @@ export default function CreatorTab() {
     }
   };
 
+  const handleMaterialInstall = async (selectedNames: string[]) => {
+    if (selectedNames.length === 0) {
+      addMessage({
+        message: t("status_select_installation_warning"),
+        type: "error",
+      });
+      return;
+    }
+
+    if (uploadedFiles.length === 0) {
+      addMessage({
+        message: t("creator_no_materials_uploaded"),
+        type: "error",
+      });
+      return;
+    }
+
+    const defaultName = `Materials (${uploadedFiles.length} files)`;
+    setPendingMaterialData({ selectedNames, presetName: defaultName });
+    setIsMaterialModalOpen(false);
+    setIsMaterialNameModalOpen(true);
+  };
+
+  const handleMaterialNameConfirm = async (presetName: string) => {
+    if (!pendingMaterialData) return;
+
+    setIsProcessing(true);
+    setIsMaterialNameModalOpen(false);
+    const { refreshInstallations, addConsoleOutput } = useAppStore.getState();
+    
+    try {
+      addConsoleOutput(t("log_installing_material_preset", { name: presetName }));
+      
+      await invoke("install_uploaded_materials", {
+        selectedNames: pendingMaterialData.selectedNames,
+        presetName,
+      });
+
+      addMessage({
+        message: t("creator_materials_install_success", { name: presetName }),
+        type: "success",
+      });
+      
+      addConsoleOutput(t("log_material_install_complete"));
+      // Refresh installations to show the new material preset
+      await refreshInstallations();
+      // Clear uploaded files after successful installation
+      setUploadedFiles([]);
+    } catch (error) {
+      addMessage({
+        message: t("creator_materials_install_error", { error }),
+        type: "error",
+      });
+      addConsoleOutput(t("log_material_install_error", { error }));
+    } finally {
+      setIsProcessing(false);
+      setPendingMaterialData(null);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -115,19 +180,10 @@ export default function CreatorTab() {
         return;
       }
 
-      // Extract filename from path
-      const filename = filePath.split(/[\\\/]/).pop() || "unknown";
-      
-      // Get BetterRTX directory and create creator/uploaded folder
-      const brtxDir = await invoke("get_brtx_dir") as string;
-      const targetDir = `${brtxDir}/creator/uploaded`;
-      
-      // Ensure target directory exists using fs plugin
-      await mkdir(targetDir, { recursive: true });
-      
-      // Copy file to target directory using fs plugin
-      const targetPath = `${targetDir}/${filename}`;
-      await copyFile(filePath, targetPath);
+      // Use Tauri command to upload the file (handles permissions properly)
+      const filename = await invoke("upload_material_file", {
+        sourcePath: filePath
+      }) as string;
 
       addMessage({
         message: t("creator_file_uploaded", { filename }),
@@ -256,6 +312,17 @@ export default function CreatorTab() {
                       </div>
                     ))}
                   </div>
+                  
+                  <div className="mt-4">
+                    <Button
+                      type="button"
+                      theme="primary"
+                      onClick={() => setIsMaterialModalOpen(true)}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? t("creator_installing") : t("creator_install_materials")}
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -278,6 +345,24 @@ export default function CreatorTab() {
         }}
         onConfirm={handleNameConfirm}
         defaultName={pendingInstallData?.presetName || ""}
+        isProcessing={isProcessing}
+      />
+      <InstallationInstanceModal
+        isOpen={isMaterialModalOpen}
+        onClose={() => setIsMaterialModalOpen(false)}
+        installations={installations}
+        presetName={`${uploadedFiles.length} material files`}
+        onInstall={handleMaterialInstall}
+        isInstalling={isProcessing}
+      />
+      <CreatorNameModal
+        isOpen={isMaterialNameModalOpen}
+        onClose={() => {
+          setIsMaterialNameModalOpen(false);
+          setPendingMaterialData(null);
+        }}
+        onConfirm={handleMaterialNameConfirm}
+        defaultName={pendingMaterialData?.presetName || ""}
         isProcessing={isProcessing}
       />
     </section>

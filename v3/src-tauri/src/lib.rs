@@ -1223,6 +1223,96 @@ async fn download_creator_settings(
 }
 
 #[tauri::command]
+async fn install_uploaded_materials(
+    app_handle: tauri::AppHandle,
+    selected_names: Vec<String>,
+    preset_name: Option<String>
+) -> Result<(), String> {
+    let uploaded_dir = brtx_dir().join("creator").join("uploaded");
+    
+    // Get all uploaded material files
+    let materials: Vec<PathBuf> = if uploaded_dir.exists() {
+        fs::read_dir(&uploaded_dir)
+            .map_err(|e| e.to_string())?
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let path = entry.path();
+                if path.is_file() && path.extension()?.to_str()? == "bin" {
+                    Some(path)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    } else {
+        return Err("No uploaded material files found".to_string());
+    };
+    
+    if materials.is_empty() {
+        return Err("No material files to install".to_string());
+    }
+    
+    let all = list_installations(app_handle.clone()).await?;
+    let map: std::collections::HashMap<_, _> = all
+        .into_iter()
+        .map(|i| (i.install_location.clone(), i))
+        .collect();
+    
+    let display_name = preset_name.unwrap_or_else(|| "Uploaded Materials".to_string());
+    let material_uuid = format!("materials-{}", chrono::Utc::now().timestamp());
+    
+    for install_location in selected_names {
+        if let Some(ins) = map.get(&install_location) {
+            let material_pack = PackInfo {
+                name: display_name.clone(),
+                uuid: material_uuid.clone(),
+                stub: String::new(),
+                tonemapping: String::new(),
+                bloom: String::new(),
+            };
+            
+            // Install materials using existing infrastructure
+            copy_shader_files_async(&app_handle, &ins.install_location, &materials, &material_pack).await?;
+            
+            // Save as creator preset
+            let creator_preset = InstalledPreset {
+                uuid: material_uuid.clone(),
+                name: display_name.clone(),
+                installed_at: chrono::Utc::now().to_rfc3339(),
+                is_creator: Some(true),
+            };
+            
+            if let Err(e) = save_installed_preset(&ins.install_location, &creator_preset) {
+                println!("⚠ Failed to save material preset tracking: {}", e);
+            }
+        } else {
+            println!("⚠ Skipping unknown selection (no matching installation): {}", install_location);
+        }
+    }
+    
+    Ok(())
+}
+
+#[tauri::command]
+async fn upload_material_file(source_path: String) -> Result<String, String> {
+    // Extract filename from source path
+    let source = Path::new(&source_path);
+    let filename = source.file_name()
+        .and_then(|name| name.to_str())
+        .ok_or("Invalid filename")?;
+    
+    // Create target directory
+    let target_dir = brtx_dir().join("creator").join("uploaded");
+    ensure_dir(&target_dir).map_err(|e| e.to_string())?;
+    
+    // Copy file to target directory
+    let target_path = target_dir.join(filename);
+    fs::copy(&source, &target_path).map_err(|e| e.to_string())?;
+    
+    Ok(filename.to_string())
+}
+
+#[tauri::command]
 fn validate_minecraft_path(path: String) -> Result<bool, String> {
     let minecraft_path = Path::new(&path);
     
@@ -1345,6 +1435,8 @@ pub fn run() {
             handle_deep_link,
             download_preset_by_uuid,
             download_creator_settings,
+            upload_material_file,
+            install_uploaded_materials,
             get_brtx_dir,
             validate_minecraft_path,
             open_folder_dialog,
