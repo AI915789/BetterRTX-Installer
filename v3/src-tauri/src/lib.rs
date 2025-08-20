@@ -33,6 +33,8 @@ struct InstalledPreset {
     uuid: String,
     name: String,
     installed_at: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    is_creator: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -329,6 +331,7 @@ async fn copy_shader_files_async(app_handle: &tauri::AppHandle, install_location
                     uuid: pack.uuid.clone(),
                     name: pack.name.clone(),
                     installed_at: chrono::Utc::now().to_rfc3339(),
+                    is_creator: None,
                 };
                 if let Err(e) = save_installed_preset(install_location, &installed_preset) {
                     println!("⚠ Failed to save preset tracking: {}", e);
@@ -360,6 +363,7 @@ async fn copy_shader_files_async(app_handle: &tauri::AppHandle, install_location
             uuid: pack.uuid.clone(),
             name: pack.name.clone(),
             installed_at: chrono::Utc::now().to_rfc3339(),
+            is_creator: None,
         };
         if let Err(e) = save_installed_preset(install_location, &installed_preset) {
             println!("⚠ Failed to save preset tracking: {}", e);
@@ -375,6 +379,7 @@ async fn copy_shader_files_async(app_handle: &tauri::AppHandle, install_location
                 uuid: pack.uuid.clone(),
                 name: pack.name.clone(),
                 installed_at: chrono::Utc::now().to_rfc3339(),
+                is_creator: None,
             };
             if let Err(e) = save_installed_preset(install_location, &installed_preset) {
                 println!("⚠ Failed to save preset tracking: {}", e);
@@ -1139,7 +1144,13 @@ fn get_brtx_dir() -> Result<String, String> {
 
 
 #[tauri::command]
-async fn download_creator_settings(app_handle: tauri::AppHandle, settings_hash: String, selected_names: Vec<String>) -> Result<(), String> {
+async fn download_creator_settings(
+    app_handle: tauri::AppHandle, 
+    settings_hash: String, 
+    selected_names: Vec<String>,
+    preset_name: Option<String>,
+    uuid: Option<String>
+) -> Result<(), String> {
     let base_url = format!("https://bedrock.graphics/build/{}", settings_hash);
     let dir = brtx_dir().join("creator").join(&settings_hash);
     ensure_dir(&dir).map_err(|e| e.to_string())?;
@@ -1170,19 +1181,39 @@ async fn download_creator_settings(app_handle: tauri::AppHandle, settings_hash: 
         .map(|i| (i.install_location.clone(), i))
         .collect();
     
-    // Avoid potential panic if the hash string is shorter than 8 characters
-    let short_hash = settings_hash.get(0..8).unwrap_or(&settings_hash);
+    // Use provided name or fallback to hash-based name
+    let display_name = preset_name.unwrap_or_else(|| {
+        let short_hash = settings_hash.get(0..8).unwrap_or(&settings_hash);
+        format!("Creator Settings ({})", short_hash)
+    });
+    
+    // Use provided UUID or generate one from hash
+    let creator_uuid = uuid.unwrap_or_else(|| format!("creator-{}", settings_hash));
         
     for install_location in selected_names {
         if let Some(ins) = map.get(&install_location) {
             let creator_pack = PackInfo {
-                name: format!("Creator Settings ({})", short_hash),
-                uuid: format!("creator-{}", settings_hash),
+                name: display_name.clone(),
+                uuid: creator_uuid.clone(),
                 stub: String::new(),
                 tonemapping: String::new(),
                 bloom: String::new(),
             };
+            
+            // Install materials using existing infrastructure
             copy_shader_files_async(&app_handle, &ins.install_location, &materials, &creator_pack).await?;
+            
+            // Override the saved preset to mark it as creator-made
+            let creator_preset = InstalledPreset {
+                uuid: creator_uuid.clone(),
+                name: display_name.clone(),
+                installed_at: chrono::Utc::now().to_rfc3339(),
+                is_creator: Some(true),
+            };
+            
+            if let Err(e) = save_installed_preset(&ins.install_location, &creator_preset) {
+                println!("⚠ Failed to save creator preset tracking: {}", e);
+            }
         } else {
             println!("⚠ Skipping unknown selection (no matching installation): {}", install_location);
         }

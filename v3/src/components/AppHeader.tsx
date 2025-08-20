@@ -4,10 +4,19 @@ import { Settings } from "lucide-react";
 import { ToolbarSection } from "./ToolbarSection";
 import Logo from "./Logo";
 import pkg from "../../package.json";
+import { open } from "@tauri-apps/plugin-shell";
 
 export default function AppHeader() {
   const { toolbarOpen, setToolbarOpen } = useAppStore();
   const { t } = useTranslation();
+
+  const handleVersionClick = async () => {
+    try {
+      await open(`https://github.com/BetterRTX/BetterRTX-Installer/releases/tag/v${pkg.version}`);
+    } catch (error) {
+      console.error('Failed to open release page:', error);
+    }
+  };
   return (
     <header className="top-toolbar">
       <div className="toolbar-left">
@@ -15,7 +24,15 @@ export default function AppHeader() {
       </div>
 
       <div className="toolbar-right">
-        <span className="app-version">v{pkg.version}</span>
+        <button 
+          className="app-version app-version--link" 
+          onClick={handleVersionClick}
+          title={t('open_release_page', 'Open release page on GitHub')}
+        >
+          {t('installer_version', {
+            version: pkg.version
+          })}
+        </button>
         {/* Menu button to show toolbar */}
         <button
           id="toolbar-menu-btn"

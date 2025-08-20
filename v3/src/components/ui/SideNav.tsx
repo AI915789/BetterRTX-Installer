@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../store/appStore";
 import { cx } from "classix";
-import { Home, Package, Wrench, Palette } from "lucide-react";
+import { DownloadIcon, Package, Wrench, Palette } from "lucide-react";
 
 interface SideNavProps {
   className?: string;
@@ -35,7 +35,7 @@ export const SideNav: React.FC<SideNavProps> = ({ className, children }) => {
     {
       id: "installations" as const,
       label: t("tab_installations"),
-      icon: Home,
+      icon: DownloadIcon,
       description: t("installations_title"),
     },
   ];
@@ -43,12 +43,12 @@ export const SideNav: React.FC<SideNavProps> = ({ className, children }) => {
   return (
     <nav className={cx("sidebar-nav", className)}>
       <div className="sidebar-nav__header">
-        <h2 className="sidebar-nav__title">{t("currently_installed")}</h2>
+        <h2 className="sidebar-nav__title cursor-default">{t("currently_installed")}</h2>
       </div>
       {children}
 
       <div className="sidebar-nav__header">
-        <h2 className="sidebar-nav__title">{t("navigation")}</h2>
+        <h2 className="sidebar-nav__title cursor-default">{t("navigation")}</h2>
       </div>
       <div className="sidebar-nav__content">
         {navItems.map((item) => {

@@ -9,6 +9,7 @@ export interface Installation {
     uuid: string;
     name: string;
     installed_at: string;
+    is_creator?: boolean;
   };
 }
 

@@ -12,6 +12,7 @@
     "dialog:default",
     "fs:default",
     "upload:default",
-    "shell:allow-execute"
+    "shell:allow-execute",
+    "shell:allow-open"
   ]
 }

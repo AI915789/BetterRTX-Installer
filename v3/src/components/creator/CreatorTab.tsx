@@ -7,6 +7,7 @@ import Button from "../ui/Button";
 import { useAppStore } from "../../store/appStore";
 import { useStatusStore } from "../../store/statusStore";
 import InstallationInstanceModal from "../installations/InstallationInstanceModal";
+import CreatorNameModal from "./CreatorNameModal";
 
 export default function CreatorTab() {
   const { t } = useTranslation();
@@ -16,6 +17,11 @@ export default function CreatorTab() {
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+  const [pendingInstallData, setPendingInstallData] = useState<{
+    selectedNames: string[];
+    presetName: string;
+  } | null>(null);
 
   const handleInstall = async (selectedNames: string[]) => {
     if (selectedNames.length === 0) {
@@ -26,27 +32,50 @@ export default function CreatorTab() {
       return;
     }
 
-    setIsProcessing(true);
+    const defaultName = `Settings ${settingsHash.slice(0, 8)}`;
+    setPendingInstallData({ selectedNames, presetName: defaultName });
     setIsModalOpen(false);
+    setIsNameModalOpen(true);
+  };
+
+  const handleNameConfirm = async (presetName: string) => {
+    if (!pendingInstallData) return;
+
+    setIsProcessing(true);
+    setIsNameModalOpen(false);
+    const { refreshInstallations, addConsoleOutput } = useAppStore.getState();
+    
     try {
+      addConsoleOutput(t("log_installing_creator_preset", { name: presetName }));
+      
+      // Create a unique UUID for the creator preset using settings hash
+      const creatorUuid = `creator-${settingsHash.trim()}`;
+      
       await invoke("download_creator_settings", {
         settingsHash: settingsHash.trim(),
-        selectedNames,
+        selectedNames: pendingInstallData.selectedNames,
+        presetName,
+        uuid: creatorUuid,
       });
 
       addMessage({
-        message: t("creator_install_success", { hash: settingsHash.slice(0, 8) }),
+        message: t("creator_install_success", { name: presetName }),
         type: "success",
       });
-
+      
+      addConsoleOutput(t("log_creator_install_complete"));
+      // Refresh installations to show the new creator preset
+      await refreshInstallations();
       setSettingsHash("");
     } catch (error) {
       addMessage({
         message: t("creator_install_error", { error }),
         type: "error",
       });
+      addConsoleOutput(t("log_creator_install_error", { error }));
     } finally {
       setIsProcessing(false);
+      setPendingInstallData(null);
     }
   };
 
@@ -240,6 +269,16 @@ export default function CreatorTab() {
         presetName={`settings ${settingsHash.slice(0, 8)}...`}
         onInstall={handleInstall}
         isInstalling={isProcessing}
+      />
+      <CreatorNameModal
+        isOpen={isNameModalOpen}
+        onClose={() => {
+          setIsNameModalOpen(false);
+          setPendingInstallData(null);
+        }}
+        onConfirm={handleNameConfirm}
+        defaultName={pendingInstallData?.presetName || ""}
+        isProcessing={isProcessing}
       />
     </section>
   );

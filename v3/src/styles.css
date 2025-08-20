@@ -289,6 +289,14 @@
     @apply text-xs text-app-muted font-mono cursor-default;
   }
 
+  .app-version--link {
+    @apply cursor-pointer hover:text-brand-accent transition-colors border-0 bg-transparent p-0;
+  }
+
+  .app-version--link:hover {
+    @apply underline;
+  }
+
   /* Secondary toolbar */
   .secondary-toolbar {
     @apply sticky top-12 z-40 border-b px-4 py-3 border-app-border bg-app-panel;
@@ -479,6 +487,11 @@
   .preview-badge {
     @apply badge bg-brand-accent-600 text-white text-xs;
     border-color: color-mix(in oklab, var(--color-brand-accent-600) 70%, black 30%);
+  }
+
+  .creator-badge {
+    @apply badge bg-green-600 text-white text-xs;
+    border-color: color-mix(in oklab, var(--color-green-600) 70%, black 30%);
   }
 
   .installation-path {

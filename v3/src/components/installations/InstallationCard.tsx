@@ -11,6 +11,7 @@ export interface Installation {
     uuid: string;
     name: string;
     installed_at: string;
+    is_creator?: boolean;
   };
 }
 
@@ -58,6 +59,9 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
           {installation.FriendlyName}
           {installation.Preview && (
             <span className="preview-badge ml-2">Preview</span>
+          )}
+          {installation.installed_preset?.is_creator && (
+            <span className="creator-badge ml-2">Creator</span>
           )}
         </h3>
 
