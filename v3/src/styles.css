@@ -92,6 +92,17 @@
   }
 }
 
+@keyframes tab-view-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Custom utilities - must be at top level, not nested in @layer */
 @utility panel {
   @apply rounded-lg border shadow-sm bg-app-panel border-app-border;
@@ -207,6 +218,22 @@
     @apply p-4 md:p-6;
   }
 
+  /* Tab view transitions */
+  .tab-content {
+    @apply relative;
+  }
+
+  .tab-view {
+    animation: tab-view-enter 180ms ease-out;
+    will-change: opacity, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tab-view {
+      animation: none;
+    }
+  }
+
   /* Sidebar navigation */
   .nav {
     @apply flex flex-col gap-1;
@@ -221,7 +248,7 @@
   }
 
   .nav__link--active {
-    @apply border-brand-accent bg-brand-accent/20;
+    @apply border-minecraft-blue-600 bg-minecraft-blue-600/20;
   }
 
   /* Panels / cards - utilities moved to top level */
@@ -259,7 +286,7 @@
   }
 
   .field__input:focus {
-    @apply ring-brand-accent border-brand-accent;
+    @apply ring-brand-accent border-minecraft-blue-600;
   }
 
   /* Badges - utilities moved to top level */
@@ -494,6 +521,16 @@
     border-color: color-mix(in oklab, var(--color-green-600) 70%, black 30%);
   }
 
+  .creator-icon {
+    @apply w-6 h-6 rounded-full bg-gradient-to-tr from-transparent via-white/25 to-transparent hover:to-black/25 hover:from-black/25 transition-all duration-200 bg-blend-overlay text-shadow-2xs;
+    background-size: 200%;
+
+    &:hover {
+      @apply bg-black/25;
+      background-position: 100% 0;
+    }
+  }
+
   .installation-path {
     @apply px-4 pt-2 text-xs text-app-muted break-all font-mono select-all;
   }
@@ -533,6 +570,10 @@
 
   .preset-card.selected {
     @apply border-brand-accent;
+  }
+
+  .preset-list:has(.preset-card.selected) .preset-card:not(.selected) {
+    @apply bg-red-500;
   }
 
   .preset-header {
@@ -726,7 +767,7 @@
 
   /* Switch Component */
   .switch {
-    @apply grid grid-flow-row grid-cols-3 place-items-center;
+    @apply flex w-fit min-w-min max-w-48;
   }
 
   .switch:hover .switch__track .switch__button {
@@ -848,7 +889,7 @@
 
   /* Modal Components */
   .modal-backdrop {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
+    @apply fixed inset-0 z-[1000] flex items-center justify-center bg-black/50;
   }
 
   .modal {
@@ -905,7 +946,7 @@
   }
 
   .installation-item__label {
-    @apply flex items-start gap-3 p-3 cursor-pointer;
+    @apply flex items-center gap-3 p-3 cursor-pointer;
   }
 
   .installation-item__checkbox {
@@ -913,7 +954,7 @@
   }
 
   .installation-item__info {
-    @apply flex-1 space-y-1;
+    @apply flex flex-col items-start flex-1 space-y-1 pl-1 cursor-pointer select-none;
   }
 
   .installation-item__name {
@@ -1041,5 +1082,91 @@
   .dropzone-overlay__text {
     @apply text-2xl font-bold text-brand-accent drop-shadow-lg;
     text-shadow: 0 0 20px rgba(var(--color-brand-accent-rgb), 0.8);
+  }
+
+  /* IOBit Panel Components */
+  .iobit-panel {
+    @apply panel space-y-4;
+  }
+
+  .iobit-header {
+    @apply flex items-center justify-between;
+  }
+
+  .iobit-title {
+    @apply text-lg font-semibold;
+  }
+
+  .iobit-status {
+    @apply badge text-xs font-medium;
+  }
+
+  .iobit-status.found {
+    @apply bg-minecraft-green-600 text-white border-minecraft-green-700;
+  }
+
+  .iobit-status.not-found {
+    @apply bg-minecraft-red-600 text-white border-minecraft-red-700;
+  }
+
+  .iobit-content {
+    @apply space-y-4;
+  }
+
+  .iobit-help {
+    @apply text-sm text-app-muted;
+  }
+
+  .iobit-path-section {
+    @apply space-y-2;
+  }
+
+  .iobit-path-label {
+    @apply text-xs font-semibold;
+  }
+
+  .iobit-path-display {
+    @apply panel__body min-h-10 flex items-center bg-app-panel/50;
+  }
+
+  .iobit-path-text {
+    @apply font-mono text-sm text-app-fg break-all select-all;
+  }
+
+  .iobit-path-empty {
+    @apply text-sm text-app-muted italic;
+  }
+
+  .iobit-actions {
+    @apply flex items-center gap-3;
+  }
+
+  .iobit-button {
+    @apply button;
+  }
+
+  .iobit-button:hover {
+    @apply hover-lift;
+  }
+
+  .iobit-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+    transform: none;
+  }
+
+  .iobit-button.auto-detect {
+    @apply bg-minecraft-blue-600 text-white border-minecraft-blue-600;
+  }
+
+  .iobit-button.browse {
+    @apply bg-app-panel text-app-fg border-app-border;
+  }
+
+  .iobit-success {
+    @apply p-3 rounded-md border border-minecraft-green-600 bg-minecraft-green-600/10 text-minecraft-green-600;
+  }
+
+  .iobit-success p {
+    @apply text-sm font-medium;
   }
 }

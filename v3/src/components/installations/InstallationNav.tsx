@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import PresetIcon from "../presets/PresetIcon";
 import { useAppStore } from "../../store/appStore";
+import CreatorIcon from "../creator/CreatorIcon";
 
 export default function InstallationNav() {
   const { t } = useTranslation();
@@ -20,11 +21,11 @@ export default function InstallationNav() {
     .filter((preset) => preset !== null);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-4 divide-y divide-app-border/50 px-2 pt-4">
       {installedPresets.map((preset) => (
-        <div
+        <button
           key={preset.uuid}
-          className="flex flex-row items-center gap-2 cursor-pointer"
+          className="flex flex-row items-center gap-2 cursor-pointer pb-4"
           title={t("open_installation", {
             installation: preset.installation.FriendlyName,
           })}
@@ -36,18 +37,19 @@ export default function InstallationNav() {
 
             window.open(`minecraft://`);
           }}
+          type="button"
         >
-          <PresetIcon uuid={preset.uuid} extra="max-w-16" />
-          <div className="flex flex-col items-start gap-2">
+          {preset.installation.installed_preset?.is_creator ? <CreatorIcon /> : <PresetIcon uuid={preset.uuid} extra="max-w-16 h-12" />}
+          <div className="flex flex-col items-start gap-1 group">
             <h3
-              className="m-0 text-sm font-semibold text-app-fg"
+              className="m-0 leading-snug text-sm font-semibold text-app-fg group-hover:underline underline-offset-4"
               title={preset.installation.InstallLocation}
             >
               {preset.installation.FriendlyName}
             </h3>
-            <span className="text-xs opacity-75">{preset.name}</span>
+            <span className="text-xs opacity-75 group-hover:opacity-100 transition-opacity">{preset.name}</span>
           </div>
-        </div>
+        </button>
       ))}
     </div>
   );

@@ -5,6 +5,7 @@ import Button from "../ui/Button";
 import BlockPath from "../ui/BlockPath";
 import PresetIcon from "./PresetIcon";
 import { ChevronDown } from "lucide-react";
+import BedrockGraphicsLink from "../ui/BedrockGraphicsLink";
 
 export interface PackInfo {
   name: string;
@@ -46,10 +47,8 @@ export const PresetCard: React.FC<PresetCardProps> = ({
   return (
     <div
       className={cx(
-        "preset-card",
-        selected
-          ? "selected bg-brand-accent/5 border-brand-accent-600"
-          : "bg-app-panel"
+        "preset-card transition-all",
+        selected && "selected"
       )}
       data-uuid={preset.uuid}
       onClick={handleCardClick}
@@ -77,25 +76,14 @@ export const PresetCard: React.FC<PresetCardProps> = ({
       <div
         className={cx(
           "preset-details",
-          "overflow-hidden",
-          !selected ? "max-h-0" : "max-h-full"
+          "overflow-hidden transition-all",
+          !selected ? "max-h-0 opacity-0 pointer-events-none translate-y-2" : "max-h-full opacity-100 pointer-events-auto translate-y-0"
         )}
       >
         <div className="flex flex-col gap-1 text-xs">
-          <p>
-            View on{" "}
-            <a
-              className="preset-link"
-              href={`https://bedrock.graphics/presets/${
-                preset.slug ?? preset.uuid
-              }`}
-              target="_blank"
-            >
-              bedrock.graphics
-            </a>
-          </p>
+          <BedrockGraphicsLink preset={preset.uuid} />
           <dl>
-            <dt>Stub</dt>
+            <dt>RTX Stub</dt>
             <dd>
               <BlockPath path={preset.stub} href={preset.stub} />
             </dd>
@@ -110,7 +98,7 @@ export const PresetCard: React.FC<PresetCardProps> = ({
           </dl>
         </div>
       </div>
-      <div className="preset-card__footer">
+      <div className={cx("preset-card__footer border-t", selected ? "border-app-border pt-2" : "border-transparent")}>
         <Button
           theme={!isInstalling ? "primary" : null}
           block

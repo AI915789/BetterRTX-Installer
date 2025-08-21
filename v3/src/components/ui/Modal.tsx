@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { cx } from "classix";
 
 interface ModalProps {
@@ -24,7 +25,7 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
-  return (
+  const modalNode = (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className={cx("modal", className)}>
         <div className="modal__header">
@@ -42,6 +43,8 @@ const Modal: React.FC<ModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalNode, document.body);
 };
 
 export default Modal;

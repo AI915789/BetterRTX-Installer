@@ -100,7 +100,7 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
                   "installation-item--selected"
               )}
             >
-              <label className="installation-item__label">
+              <div className="installation-item__label" onClick={() => handleInstallationToggle(installation.InstallLocation)}>
                 <Switch
                   checked={selectedInstallations.has(
                     installation.InstallLocation
@@ -108,7 +108,6 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
                   onCheckedChange={() =>
                     handleInstallationToggle(installation.InstallLocation)
                   }
-                  label={t("install_preset_to_instance")}
                 />
                 <div className="installation-item__info">
                   <span className="installation-item__name">
@@ -129,7 +128,7 @@ const InstallationInstanceModal: React.FC<InstallationInstanceModalProps> = ({
                     </span>
                   )}
                 </div>
-              </label>
+              </div>
             </div>
           ))}
         </div>

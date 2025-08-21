@@ -1,6 +1,7 @@
 import React from "react";
 import { cx } from "classix";
 import { useTranslation } from "react-i18next";
+import { Lock } from "lucide-react";
 import PresetIcon from "../presets/PresetIcon";
 
 export interface Installation {
@@ -12,6 +13,7 @@ export interface Installation {
     name: string;
     installed_at: string;
     is_creator?: boolean;
+    is_api?: boolean;
   };
 }
 
@@ -26,6 +28,24 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString().replace(/\//g, "-");
 };
 
+const isSideloadedInstallation = (installation: Installation): boolean => {
+  // Consider an installation sideloaded if it's in a non-standard location
+  // Standard locations include Microsoft Store paths and common installation directories
+  const path = installation.InstallLocation.toLowerCase();
+  
+  // Standard Microsoft Store and official installation paths
+  const standardPaths = [
+    'microsoft.minecraftuwp',
+    'microsoft.minecraftpreview',
+    'windowsapps',
+    'program files',
+    'program files (x86)',
+  ];
+  
+  // If the path contains any standard location indicators, it's not sideloaded
+  return !standardPaths.some(standardPath => path.includes(standardPath));
+};
+
 export const InstallationCard: React.FC<InstallationCardProps> = ({
   installation,
   selected = false,
@@ -38,8 +58,8 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
     onSelectionChange?.(installation.InstallLocation, newSelected);
   };
 
-  const presetIcon = installation.installed_preset ? (
-    <PresetIcon uuid={installation.installed_preset.uuid} extra="max-w-24 ml-2" />
+  const presetIcon = installation.installed_preset && !installation.installed_preset.is_creator ? (
+    <div className="w-24 mb-1 mx-2"><PresetIcon uuid={installation.installed_preset.uuid} extra="max-w-24 ml-2" /></div>
   ) : null;
 
   return (
@@ -56,27 +76,31 @@ export const InstallationCard: React.FC<InstallationCardProps> = ({
           className="installation-header"
           title={installation.InstallLocation}
         >
-          {installation.FriendlyName}
+          {!isSideloadedInstallation(installation) && (
+            <Lock className="inline-block w-4 h-4 mr-2 text-app-muted" />
+          )}
+          <span className="truncate flex-1">{installation.FriendlyName}</span>
           {installation.Preview && (
             <span className="preview-badge ml-2">Preview</span>
           )}
           {installation.installed_preset?.is_creator && (
-            <span className="creator-badge ml-2">Creator</span>
+            <span className="creator-badge ml-2">{t("creator_preset")}</span>
+          )}
+          {installation.installed_preset?.is_api && (
+            <span className="community-badge ml-2">{t("community_preset")}</span>
           )}
         </h3>
-
-        
 
         <div
           className={cx(
             "installation-details",
-            "overflow-hidden items-center py-2"
+            "overflow-hidden items-center py-2 flex-shrink-1"
           )}
         >
           {presetIcon || (
-          <div className="installation-placeholder w-full h-32 bg-app-border/20 rounded flex items-center justify-center">
+          <div className="installation-placeholder size-32 ml-3 bg-app-border/20 rounded flex items-center justify-center">
             <span className="text-app-muted text-sm">
-              {installation.Preview ? "Preview" : "Minecraft"}
+              {installation.Preview ? "Preview Edition" : "Minecraft Release"}
             </span>
           </div>
         )}

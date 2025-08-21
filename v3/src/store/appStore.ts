@@ -30,6 +30,7 @@ interface AppState {
   consoleOutput: string[];
   activeTab: 'installations' | 'presets' | 'actions' | 'creator';
   toolbarOpen: boolean;
+  iobitPath: string | null;
 
   // Actions
   setInstallations: (installations: Installation[]) => void;
@@ -42,6 +43,7 @@ interface AppState {
   clearConsole: () => void;
   addInstallation: (installation: Installation) => void;
   removeInstallation: (path: string) => void;
+  setIobitPath: (path: string | null) => void;
 
   // Async actions
   refreshInstallations: () => Promise<void>;
@@ -50,6 +52,9 @@ interface AppState {
   installRTX: (installPath: string) => Promise<void>;
   updateOptions: (installPath: string) => Promise<void>;
   backupSupportFiles: (installPath: string) => Promise<void>;
+  uninstallRTX: (installPaths: string[]) => Promise<void>;
+  refreshIobitPath: () => Promise<void>;
+  selectIobitPath: () => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -61,6 +66,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   consoleOutput: [],
   activeTab: 'installations',
   toolbarOpen: false,
+  iobitPath: null,
 
   // Setters
   setInstallations: (installations) => set({ installations }),
@@ -69,6 +75,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSelectedPreset: (selectedPreset) => set({ selectedPreset }),
   setActiveTab: (activeTab) => set({ activeTab }),
   setToolbarOpen: (toolbarOpen) => set({ toolbarOpen }),
+  setIobitPath: (iobitPath) => set({ iobitPath }),
 
   addConsoleOutput: (message) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -168,6 +175,53 @@ export const useAppStore = create<AppState>((set, get) => ({
       addConsoleOutput(`Backup created successfully: ${backupDir}`);
     } catch (error) {
       const errorMsg = `Error creating backup: ${error}`;
+      addConsoleOutput(errorMsg);
+    }
+  },
+
+  uninstallRTX: async (installPaths) => {
+    const { addConsoleOutput } = get();
+    try {
+      addConsoleOutput(`Uninstalling RTX from ${installPaths.length} installation(s)...`);
+      await invoke('uninstall_rtx', { selectedNames: installPaths });
+      addConsoleOutput('RTX uninstalled successfully');
+    } catch (error) {
+      const errorMsg = `Error uninstalling RTX: ${error}`;
+      addConsoleOutput(errorMsg);
+      throw error;
+    }
+  },
+
+  refreshIobitPath: async () => {
+    const { addConsoleOutput, setIobitPath } = get();
+    
+    try {
+      const result = await invoke<string>('check_iobit_unlocker');
+      const pathMatch = result.match(/IObit Unlocker found at: (.+)/);
+      if (pathMatch) {
+        setIobitPath(pathMatch[1]);
+        addConsoleOutput('IObit Unlocker detected');
+      } else {
+        setIobitPath(null);
+      }
+    } catch (error) {
+      setIobitPath(null);
+      addConsoleOutput(`IObit Unlocker not found: ${error}`);
+    }
+  },
+
+  selectIobitPath: async () => {
+    const { addConsoleOutput, setIobitPath } = get();
+    
+    try {
+      const selectedPath = await invoke<string | null>('open_iobit_file_dialog');
+      if (selectedPath) {
+        const result = await invoke<string>('set_iobit_path', { path: selectedPath });
+        setIobitPath(selectedPath);
+        addConsoleOutput(result);
+      }
+    } catch (error) {
+      const errorMsg = `Error setting IObit path: ${error}`;
       addConsoleOutput(errorMsg);
     }
   },

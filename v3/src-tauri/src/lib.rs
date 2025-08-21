@@ -1355,6 +1355,84 @@ fn open_folder_dialog(app: tauri::AppHandle) -> Result<Option<String>, String> {
 }
 
 #[tauri::command]
+fn open_iobit_file_dialog(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    let result = app
+        .dialog()
+        .file()
+        .set_title("Select IObit Unlocker Executable")
+        .add_filter("Executable Files", &["exe"])
+        .add_filter("Shortcut Files", &["lnk"])
+        .add_filter("All Files", &["*"])
+        .blocking_pick_file();
+
+    match result {
+        Some(path) => Ok(Some(path.to_string())),
+        None => Ok(None),
+    }
+}
+
+#[tauri::command]
+fn get_iobit_path() -> Result<Option<String>, String> {
+    if let Some(path) = get_iobit_path_cached() {
+        Ok(Some(path.to_string_lossy().to_string()))
+    } else {
+        Ok(None)
+    }
+}
+
+#[tauri::command]
+async fn uninstall_rtx(app_handle: tauri::AppHandle, selected_names: Vec<String>) -> Result<(), String> {
+    // Download original material.bin files from the uninstall API endpoints
+    let dir = brtx_dir().join("uninstall");
+    ensure_dir(&dir).map_err(|e| e.to_string())?;
+    let client = Client::new();
+    
+    // Download original files with caching
+    let stub_path = dir.join("RTXStub.material.bin");
+    download_to_file_with_cache(&client, "https://bedrock.graphics/api/uninstall/rtxstub", &stub_path).await?;
+    let tone_path = dir.join("RTXPostFX.Tonemapping.material.bin");
+    download_to_file_with_cache(&client, "https://bedrock.graphics/api/uninstall/rtxpostfx", &tone_path).await?;
+    let bloom_path = dir.join("RTXPostFX.Bloom.material.bin");
+    download_to_file_with_cache(&client, "https://bedrock.graphics/api/uninstall/bloom", &bloom_path).await?;
+
+    let materials = vec![
+        stub_path.clone(),
+        tone_path.clone(),
+        bloom_path.clone(),
+    ];
+    
+    let all = list_installations(app_handle.clone()).await?;
+    let map: std::collections::HashMap<_, _> = all
+        .into_iter()
+        .map(|i| (i.install_location.clone(), i))
+        .collect();
+    
+    for install_location in selected_names {
+        if let Some(ins) = map.get(&install_location) {
+            // Create a dummy pack for uninstall
+            let uninstall_pack = PackInfo {
+                name: "Original Files".to_string(),
+                uuid: "uninstall-original".to_string(),
+                stub: String::new(),
+                tonemapping: String::new(),
+                bloom: String::new(),
+            };
+            copy_shader_files_async(&app_handle, &ins.install_location, &materials, &uninstall_pack).await?;
+            
+            // Remove the installed preset tracking for this installation
+            let presets_file = brtx_dir().join("installed_presets.json");
+            if let Some(mut installations) = read_json_file::<HashMap<String, InstalledPreset>>(&presets_file) {
+                installations.remove(&install_location);
+                let _ = write_json_file(&presets_file, &installations);
+            }
+        } else {
+            println!("⚠ Skipping unknown selection (no matching installation): {}", install_location);
+        }
+    }
+    Ok(())
+}
+
+#[tauri::command]
 async fn uninstall_package(app_handle: tauri::AppHandle, restore_initial: bool) -> Result<(), String> {
     if restore_initial {
         let all = list_installations(app_handle.clone()).await?;
@@ -1428,8 +1506,11 @@ pub fn run() {
             is_brtx_protocol_registered,
             check_iobit_unlocker,
             set_iobit_path,
+            get_iobit_path,
+            open_iobit_file_dialog,
             handle_file_drop,
             uninstall_package,
+            uninstall_rtx,
             clear_cache,
             get_cache_info,
             handle_deep_link,
