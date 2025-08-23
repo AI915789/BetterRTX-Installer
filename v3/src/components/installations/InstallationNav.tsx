@@ -6,8 +6,9 @@ import CreatorIcon from "../creator/CreatorIcon";
 export default function InstallationNav() {
   const { t } = useTranslation();
   const { installations } = useAppStore();
-  // Show the currently installed preset icons in the nav
-  const installedPresets = installations
+  
+  // Extract installations with presets
+  const presetInstallations = installations
     .map((installation) => {
       if (!installation.installed_preset) return null;
 
@@ -18,7 +19,18 @@ export default function InstallationNav() {
         installation,
       };
     })
-    .filter((preset) => preset !== null);
+    .filter((preset): preset is NonNullable<typeof preset> => preset !== null);
+  
+  // Deduplicate by preset UUID, keeping the most recently installed one
+  const uniquePresetMap = new Map();
+  presetInstallations.forEach((preset) => {
+    if (!uniquePresetMap.has(preset.uuid) || 
+        new Date(preset.installed_at) > new Date(uniquePresetMap.get(preset.uuid).installed_at)) {
+      uniquePresetMap.set(preset.uuid, preset);
+    }
+  });
+  
+  const installedPresets = Array.from(uniquePresetMap.values());
 
   return (
     <div className="flex flex-col gap-4 divide-y divide-app-border/50 px-2 pt-4">
