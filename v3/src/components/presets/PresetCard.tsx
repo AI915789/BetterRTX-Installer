@@ -81,7 +81,7 @@ export const PresetCard: React.FC<PresetCardProps> = ({
         )}
       >
         <div className="flex flex-col gap-1 text-xs">
-          <BedrockGraphicsLink preset={preset.uuid} />
+          <BedrockGraphicsLink preset={preset.slug ?? preset.uuid} />
           <dl>
             <dt>RTX Stub</dt>
             <dd>
