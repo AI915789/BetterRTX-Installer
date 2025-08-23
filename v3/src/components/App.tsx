@@ -24,6 +24,7 @@ const App: React.FC = () => {
   const [deepLinkUrl, setDeepLinkUrl] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [animateTabs, setAnimateTabs] = useState(false);
+  const [isConsoleExpanded, setIsConsoleExpanded] = useState(false);
   const {
     consoleOutput,
     activeTab,
@@ -181,7 +182,12 @@ const App: React.FC = () => {
 
           {/* Fixed Console Panel at bottom */}
           <div className="fixed bottom-0 left-0 right-0 z-50">
-            <ConsolePanel output={consoleOutput} onClear={clearConsole} />
+            <ConsolePanel
+              isExpanded={isConsoleExpanded}
+              onToggle={setIsConsoleExpanded}
+              output={consoleOutput}
+              onClear={clearConsole}
+            />
           </div>
         </div>
 

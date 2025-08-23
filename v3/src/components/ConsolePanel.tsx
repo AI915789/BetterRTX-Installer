@@ -1,17 +1,20 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import React, { useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import { cx } from "classix";
 
 interface ConsolePanelProps {
+  isExpanded: boolean;
+  onToggle: (isExpanded: boolean) => void;
   output?: string[];
   onClear?: () => void;
 }
 
 export const ConsolePanel: React.FC<ConsolePanelProps> = ({
+  isExpanded,
+  onToggle,
   output = [],
   onClear,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const outputRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new output is added
@@ -21,15 +24,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
     }
   }, [output]);
 
-  // Auto-expand when new output is added
-  useEffect(() => {
-    if (output.length > 0 && !isExpanded) {
-      setIsExpanded(true);
-    }
-  }, [output.length]);
-
   const handleToggle = () => {
-    setIsExpanded(!isExpanded);
+    onToggle(!isExpanded);
   };
 
   const handleClear = () => {
@@ -46,18 +42,22 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
           Console Output
         </h3>
         <span className="console-arrow transition-transform duration-200">
-          {isExpanded ? (
-            <ChevronUp size={16} strokeWidth={2} />
-          ) : (
-            <ChevronDown size={16} strokeWidth={2} />
-          )}
+          <ChevronDown 
+            size={16} 
+            strokeWidth={2} 
+            className={cx(
+              "transition-transform duration-200",
+              isExpanded && "rotate-180"
+            )}
+          />
         </span>
       </div>
 
       <div
-        className={`console-panel border overflow-hidden transition-all duration-300 bg-app-bg border-app-border ${
+        className={cx(
+          "console-panel border overflow-hidden transition-all duration-300 bg-app-bg border-app-border",
           isExpanded ? "console-panel--expanded" : "console-panel--collapsed"
-        }`}
+        )}
       >
         <div
           ref={outputRef}
