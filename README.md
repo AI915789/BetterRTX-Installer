@@ -1,26 +1,31 @@
-# Better RTX Installer
+# BetterRTX 安装程序
 
-### Prerequisites
+### 先决条件
 
-- Use software like
-  [MCLauncher](https://github.com/MCMrARM/mc-w10-version-launcher) or
-  [Bedrock Launcher](https://github.com/BedrockLauncher/BedrockLauncher) to
-  easily create a side-loaded Minecraft installation.
-- **OR** download [IOBit Unlocker](https://www.iobit.com/en/iobit-unlocker.php)
-  to allow copying to Minecraft Launcher/Windows Store installations.
+- 使用如
+[MCLauncher](https://github.com/MCMrARM/mc-w10-version-launcher)
+或
+[Bedrock Launcher](https://github.com/BedrockLauncher/BedrockLauncher)
+软件来轻松安装Minecraft.
+- **或者**下载
+[IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php)
+，在Minecraft启动器/微软商店安装Minecraft。
 
-## Launch Installer GUI
-Copy and paste the following line into a command terminal to start the installer. _(English version)_
+## 启动安装程序GUI
+将以下命令行复制并粘贴到命令终端中，以启动安装程序。 _(英文版)_
 
 ```
 powershell -c "iwr https://bedrock.graphics/installer -useb | iex"
 ```
 
-## Translations
+## 翻译
 
-With help from several [contributors](https://github.com/BetterRTX/BetterRTX-Installer/graphs/contributors), the installer interface has been translated into [multiple languages](https://github.com/BetterRTX/BetterRTX-Installer/tree/prerelease/v2/Localized).
+在几位
+[贡献者](https://github.com/BetterRTX/BetterRTX-Installer/graphs/contributors)
+的帮助下，安装程序界面已被翻译成
+[多种语言](https://github.com/BetterRTX/BetterRTX-Installer/tree/prerelease/v2/Localized)。
 
-Enter this command in a __64-bit PowerShell__ terminal to launch the installer in your preferred language (if available).
+在64位PowerShell终端中输入此命令，以您首选的语言启动安装程序（如果可用）。
 
 ```powershell
 iwr https://bedrock.graphics/installer/v2/$PsUICulture | iex
@@ -28,22 +33,23 @@ iwr https://bedrock.graphics/installer/v2/$PsUICulture | iex
 
 ---
 
-## Help
+## 帮助
 
-![Discord](https://img.shields.io/discord/691547840463241267?style=flat-square&logo=discord&logoColor=%23ffffff&label=Minecraft%20RTX%20Discord)
+![Discord频道](https://img.shields.io/discord/691547840463241267?style=flat-square&logo=discord&logoColor=%23ffffff&label=Minecraft%20RTX%20Discord)
 
-Join the
-[Minecraft RTX Discord](https://discord.com/invite/minecraft-rtx)
-or
-[open an Issue on GitHub](https://github.com/BetterRTX/BetterRTX-Installer/issues)
-for additional help.
+加入
+[Minecraft RTX Discord频道](https://discord.com/invite/minecraft-rtx)
+或
+[在GitHub上提交议题]
+(https://github.com/BetterRTX/BetterRTX-Installer/issues)
+以获取额外帮助。
 
-[Read the Wiki](https://github.com/BetterRTX/BetterRTX-Installer/wiki) for more details and instructions.
+[阅读维基百科](https://github.com/BetterRTX/BetterRTX-Installer/wiki) for more details and instructions.
 
 ---
 
-**[Credits](CREDITS.md) | [Contribute](CONTRIBUTING.md) | [Code of Conduct](CODE_OF_CONDUCT.md) | [Changelogs](CHANGELOGS.md) | [Security Policy](SECURITY.md)**
+**[制作人员](CREDITS.md) | [贡献](CONTRIBUTING.md) | [行为规范](CODE_OF_CONDUCT.md) | [更新日志](CHANGELOGS.md) | [安全策略](SECURITY.md)**
 
-Licensed under a [GNU GENERAL PUBLIC LICENSE](LICENSE.md)
+根据[GNU GENERAL PUBLIC LICENSE](LICENSE.md)许可
 
-**_BetterRTX_ is not affiliated with NVIDIA or Mojang.**
+**_BetterRTX_与英伟达、mojang均没有关联。**
