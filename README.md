@@ -3,9 +3,9 @@
 ### 先决条件
 
 - 使用如
-[MCLauncher](https://github.com/MCMrARM/mc-w10-version-launcher)
+[Minecraft启动器](https://github.com/MCMrARM/mc-w10-version-launcher)
 或
-[Bedrock Launcher](https://github.com/BedrockLauncher/BedrockLauncher)
+[Bedrock启动器](https://github.com/BedrockLauncher/BedrockLauncher)
 软件来轻松安装Minecraft.
 - **或者**下载
 [IObit Unlocker](https://www.iobit.com/en/iobit-unlocker.php)
@@ -44,7 +44,7 @@ iwr https://bedrock.graphics/installer/v2/$PsUICulture | iex
 (https://github.com/BetterRTX/BetterRTX-Installer/issues)
 以获取额外帮助。
 
-[阅读维基百科](https://github.com/BetterRTX/BetterRTX-Installer/wiki) for more details and instructions.
+[阅读维基百科](https://github.com/BetterRTX/BetterRTX-Installer/wiki)获取更多详细信息和说明。
 
 ---
 
